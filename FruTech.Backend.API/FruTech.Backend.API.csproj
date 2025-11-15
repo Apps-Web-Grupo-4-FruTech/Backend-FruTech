@@ -26,9 +26,6 @@
 
     <ItemGroup>
       <Folder Include="CommunityRecommendation\" />
-      <Folder Include="CropFields\" />
-      <Folder Include="CropStatus\" />
-      <Folder Include="Fields\" />
       <Folder Include="PreviewFields\" />
       <Folder Include="Recommendations\" />
       <Folder Include="Task\" />
