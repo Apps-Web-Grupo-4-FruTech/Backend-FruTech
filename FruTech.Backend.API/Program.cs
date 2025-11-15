@@ -1,36 +1,40 @@
+// csharp
+using System;
+using Microsoft.EntityFrameworkCore;
+
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using FruTech.Backend.API.Shared.Domain.Repositories;
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+
 using FruTech.Backend.API.User.Domain.Repositories;
 using FruTech.Backend.API.User.Infrastructure.Persistence.EFC.Repositories;
 using FruTech.Backend.API.User.Domain.Services;
 using FruTech.Backend.API.User.Application.Internal.CommandServices;
 using FruTech.Backend.API.User.Application.Internal.QueryServices;
+
 using FruTech.Backend.API.UpcomingTasks.Domain.Repositories;
 using FruTech.Backend.API.UpcomingTasks.Infrastructure.Persistence.EFC.Repositories;
 using FruTech.Backend.API.UpcomingTasks.Domain.Services;
 using FruTech.Backend.API.UpcomingTasks.Application.Internal.CommandServices;
 using FruTech.Backend.API.UpcomingTasks.Application.Internal.QueryServices;
+
 using FruTech.Backend.API.CropFields.Domain.Model.Repositories;
 using FruTech.Backend.API.CropFields.Infrastructure.Persistence.EFC.Repositories;
+
 using FruTech.Backend.API.Fields.Domain.Model.Repositories;
 using FruTech.Backend.API.Fields.Infrastructure.Persistence.EFC.Repositories;
+
 using FruTech.Backend.API.CommunityRecommendation.Domain.Repositories;
 using FruTech.Backend.API.CommunityRecommendation.Infrastructure.Persistence.EFC.Repositories;
 using FruTech.Backend.API.CommunityRecommendation.Domain.Services;
 using FruTech.Backend.API.CommunityRecommendation.Application.Internal.CommandServices;
 using FruTech.Backend.API.CommunityRecommendation.Application.Internal.QueryServices;
-using FruTech.Backend.API.Tasks.Application.Internal.CommandServices;
-using FruTech.Backend.API.Tasks.Application.Internal.QueryServices;
-using FruTech.Backend.API.Tasks.Domain.Repositories;
-using FruTech.Backend.API.Tasks.Domain.Services;
-using FruTech.Backend.API.Tasks.Infrastructure.Persistence.EFC.Repositories;
-using Microsoft.EntityFrameworkCore;
+
 using Cortex.Mediator;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CORS Configuration
+// CORS para el frontend
 const string FrontendCorsPolicy = "FrontendCorsPolicy";
 builder.Services.AddCors(options =>
 {
@@ -42,7 +46,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// DbContext MySQL
+// DbContext MySQL (unificado)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(
         builder.Configuration.GetConnectionString("DefaultConnection")
@@ -50,17 +54,16 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 
-// Unit of Work
+// Unidad de trabajo
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// Repositories
+// Repositorios
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IUpcomingTaskRepository, UpcomingTaskRepository>();
 builder.Services.AddScoped<ICropFieldRepository, CropFieldRepository>();
 builder.Services.AddScoped<IFieldRepository, FieldRepository>();
 builder.Services.AddScoped<IProgressHistoryRepository, ProgressHistoryRepository>();
 builder.Services.AddScoped<ICommunityRecommendationRepository, CommunityRecommendationRepository>();
-builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 
 // Services
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
@@ -69,10 +72,8 @@ builder.Services.AddScoped<IUpcomingTaskCommandService, UpcomingTaskCommandServi
 builder.Services.AddScoped<IUpcomingTaskQueryService, UpcomingTaskQueryService>();
 builder.Services.AddScoped<ICommunityRecommendationCommandService, CommunityRecommendationCommandService>();
 builder.Services.AddScoped<ICommunityRecommendationQueryService, CommunityRecommendationQueryService>();
-builder.Services.AddScoped<ITaskCommandService, TaskCommandService>();
-builder.Services.AddScoped<ITaskQueryService, TaskQueryService>();
 
-// Mediator
+// Mediator (si lo usan en la capa de aplicación)
 builder.Services.AddScoped<IMediator, Mediator>();
 
 // Controllers / OpenAPI
@@ -87,7 +88,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Create database automatically
+// Crear la base de datos automáticamente
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -110,6 +111,61 @@ app.UseSwaggerUI(c =>
 
 app.UseHttpsRedirection();
 app.UseCors(FrontendCorsPolicy);
+app.UseAuthorization();
+
+using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
+using FruTech.Backend.API.Tasks.Application.Internal.CommandServices;
+using FruTech.Backend.API.Tasks.Application.Internal.QueryServices;
+using FruTech.Backend.API.Tasks.Domain.Repositories;
+using FruTech.Backend.API.Tasks.Domain.Services;
+using FruTech.Backend.API.Tasks.Infrastructure.Persistence.EFC.Repositories;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddControllers();
+
+// Add Swagger/OpenAPI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Configure CORS for external access
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
+// Configure DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    )
+);
+
+// Dependency Injection Configuration
+// Task Context
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITaskCommandService, TaskCommandService>();
+builder.Services.AddScoped<ITaskQueryService, TaskQueryService>();
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+app.UseSwagger();
+app.UseSwaggerUI();
+
+// Enable CORS
+app.UseCors("AllowAll");
+
+app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 

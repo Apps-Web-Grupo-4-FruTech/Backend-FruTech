@@ -11,33 +11,47 @@ using CommunityRecommendationAggregate = FruTech.Backend.API.CommunityRecommenda
 namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration
 {
     public class AppDbContext : DbContext
+    // DbSets
+    public DbSet<CommunityRecommendationAggregate> CommunityRecommendations { get; set; }
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        // DbSets
+        // DbSets de User y UpcomingTasks
         public DbSet<UserAggregate> Users { get; set; }
         public DbSet<UpcomingTaskAggregate> UpcomingTasks { get; set; }
-        public DbSet<CommunityRecommendationAggregate> CommunityRecommendations { get; set; }
+    // Tasks Context
+    public DbSet<Tasks.Domain.Model.Aggregate.Task> Tasks { get; set; }
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder builder)
+    {
+        //builder.AddCreatedUpdatedInterceptor();
+        base.OnConfiguring(builder);
+    }
+    
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        
+        // Create all entities configurations
+        
+        //Publishing Context
+        //builder.ApplyPublishingConfiguration();
+        // Task Context
+        builder.ApplyTaskConfiguration();
+        
+        // DbSets de CropFields y Fields
         public DbSet<CropField> CropFields { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<ProgressHistory> ProgressHistory { get; set; }
         public DbSet<FieldTask> FieldTasks { get; set; }
-        public DbSet<Tasks.Domain.Model.Aggregate.Task> Tasks { get; set; }
 
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder builder)
-        {
-            //builder.AddCreatedUpdatedInterceptor();
-            base.OnConfiguring(builder);
-        }
-
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            // Task Context
-            builder.ApplyTaskConfiguration();
 
             // Configuración CropField
             builder.Entity<CropField>().ToTable("CropFields");
