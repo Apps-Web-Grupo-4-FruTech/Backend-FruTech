@@ -1,41 +1,66 @@
+using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
+using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Repositories;
+using FruTech.Backend.API.Shared.Domain.Repositories;
+using FruTech.Backend.API.CommunityRecommendation.Application.Internal.CommandServices;
+using FruTech.Backend.API.CommunityRecommendation.Application.Internal.QueryServices;
+using FruTech.Backend.API.CommunityRecommendation.Domain.Repositories;
+using FruTech.Backend.API.CommunityRecommendation.Domain.Services;
+using FruTech.Backend.API.CommunityRecommendation.Infrastructure.Persistence.EFC.Repositories;
+using Microsoft.EntityFrameworkCore;
+using Cortex.Mediator;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+
+// Add Swagger/OpenAPI
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+// Configure CORS for external access
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+
+// Configure DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    )
+);
+
+// Add Cortex Mediator
+builder.Services.AddScoped<IMediator, Mediator>();
+
+// Dependency Injection Configuration
+// Shared Infrastructure
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+// Community Recommendation Context
+builder.Services.AddScoped<ICommunityRecommendationRepository, CommunityRecommendationRepository>();
+builder.Services.AddScoped<ICommunityRecommendationCommandService, CommunityRecommendationCommandService>();
+builder.Services.AddScoped<ICommunityRecommendationQueryService, CommunityRecommendationQueryService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+
+// Enable CORS
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+app.UseAuthorization();
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
