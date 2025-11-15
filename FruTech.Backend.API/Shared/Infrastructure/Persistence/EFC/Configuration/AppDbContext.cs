@@ -2,17 +2,18 @@ using FruTech.Backend.API.CropFields.Domain.Model.Entities;
 using FruTech.Backend.API.Fields.Domain.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
-using UserAggregate = FruTech.Backend.API.User.Domain.Model.Aggregates.User; // alias
-using UpcomingTaskAggregate = FruTech.Backend.API.UpcomingTasks.Domain.Model.Aggregates.UpcomingTask; // agregado
+using UserAggregate = FruTech.Backend.API.User.Domain.Model.Aggregates.User;
+using UpcomingTaskAggregate = FruTech.Backend.API.UpcomingTasks.Domain.Model.Aggregates.UpcomingTask;
 
 namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration
 {
-    public DbSet<UserAggregate> Users { get; set; } 
-    public DbSet<UpcomingTaskAggregate> UpcomingTasks { get; set; } // nuevo DbSet
-    
-    protected override void OnConfiguring(DbContextOptionsBuilder builder)
     public class AppDbContext : DbContext
     {
+        // DbSets de User y UpcomingTasks
+        public DbSet<UserAggregate> Users { get; set; }
+        public DbSet<UpcomingTaskAggregate> UpcomingTasks { get; set; }
+        
+        // DbSets de CropFields y Fields
         public DbSet<CropField> CropFields { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<ProgressHistory> ProgressHistory { get; set; }
@@ -47,8 +48,6 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             builder.Entity<Field>().Property(f => f.FieldSize).HasMaxLength(50);
             builder.Entity<Field>().Property(f => f.Product).HasMaxLength(150);
             builder.Entity<Field>().Property(f => f.Crop).HasMaxLength(150);
-
-
 
             // Configuración ProgressHistory
             builder.Entity<ProgressHistory>().ToTable("ProgressHistory");
