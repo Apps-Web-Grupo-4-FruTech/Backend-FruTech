@@ -1,4 +1,5 @@
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using FruTech.Backend.API.Tasks.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 
@@ -6,6 +7,9 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
 
 public class AppDbContext(DbContextOptions options) : DbContext(options)
 {
+    // Tasks Context
+    public DbSet<Tasks.Domain.Model.Aggregate.Task> Tasks { get; set; }
+    
     protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
         //builder.AddCreatedUpdatedInterceptor();
@@ -20,6 +24,8 @@ public class AppDbContext(DbContextOptions options) : DbContext(options)
         
         //Publishing Context
         //builder.ApplyPublishingConfiguration();
+        // Task Context
+        builder.ApplyTaskConfiguration();
         
 
         builder.UseSnakeCaseNamingConvention();
