@@ -1,20 +1,20 @@
 using FruTech.Backend.API.Shared.Domain.Repositories;
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 
-namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Repositories;
-
-/// <summary>
-///     Unit of Work implementation for managing transactions
-/// </summary>
-/// <remarks>
-///     This class implements the basic operations for a unit of work.
-///     It requires the context to be passed in the constructor.
-/// </remarks>
-
-public class UnitOfWork(AppDbContext context) : IUnitOfWork
+namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Repositories
 {
-    public async Task CompleteAsync()
+    public class UnitOfWork : IUnitOfWork
     {
-        await context.SaveChangesAsync();
+        private readonly AppDbContext _context;
+
+        public UnitOfWork(AppDbContext context)
+        {
+            _context = context;
+        }
+
+        public async Task CompleteAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }
