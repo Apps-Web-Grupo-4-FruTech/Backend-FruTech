@@ -1,11 +1,11 @@
-namespace FruTech.Backend.API.CommunityRecommendation.Domain.Model.Aggregates;
+namespace FruTech.Backend.API.CommunityRecommendation.Domain.Repositories;
+
+using FruTech.Backend.API.Shared.Domain.Repositories;
+using Model.Aggregates;
 
 /// <summary>
 /// Repository interface for managing community recommendations.
 /// </summary>
-public interface ICommunityRecommendationRepository
+public interface ICommunityRecommendationRepository : IBaseRepository<CommunityRecommendation>
 {
-    //TODO: Link to IBaseRepository<CommunityRecommendation>
-    //public interface ICommunityRecommendationRepository :
-    //IBaseRepository<CommunityRecommendation> {}
 }

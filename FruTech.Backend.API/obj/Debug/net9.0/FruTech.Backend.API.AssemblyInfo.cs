@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FruTech.Backend.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+752db640440f09ad90ff7c463268dd56a21150af")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+fdb4522957d6e12b67413424cee21d488bc9820c")]
 [assembly: System.Reflection.AssemblyProductAttribute("FruTech.Backend.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FruTech.Backend.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

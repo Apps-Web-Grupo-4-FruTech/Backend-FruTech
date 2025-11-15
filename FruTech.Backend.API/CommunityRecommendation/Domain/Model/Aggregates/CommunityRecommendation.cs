@@ -3,7 +3,7 @@ namespace FruTech.Backend.API.CommunityRecommendation.Domain.Model.Aggregates;
 /// <summary>
 /// Community Recommendation aggregate root entity
 /// </summary>
-public partial class CommunityRecommendation
+public class CommunityRecommendation
 {
     public CommunityRecommendation(int id, string user, string role,
         string description) : this()
@@ -16,13 +16,13 @@ public partial class CommunityRecommendation
     
     public CommunityRecommendation()
     {
-        //TODO: Implement community recommendation creation logic
+        User = string.Empty;
+        Role = string.Empty;
+        Description = string.Empty;
     }
     
-    public int Id { get; }
-    public string User { get; private  set; }
-    
+    public int Id { get; set; }
+    public string User { get; private set; }
     public string Role { get; private set; }
-    
     public string Description { get; private set; }
 }

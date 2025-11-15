@@ -1,4 +1,4 @@
-namespace FruTech.Backend.API.CommunityRecommendation.Domain.Model.Aggregates;
+namespace FruTech.Backend.API.CommunityRecommendation.Domain.Model.Queries;
 
 /// <summary>
 /// Represents a query to retrieve a community recommendation by its unique identifier.
