@@ -1,31 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "E:\\Github\\Backend-FruTech\\FruTech.Backend.API\\FruTech.Backend.API.csproj": {}
+    "/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/FruTech.Backend.API.csproj": {}
   },
   "projects": {
-    "E:\\Github\\Backend-FruTech\\FruTech.Backend.API\\FruTech.Backend.API.csproj": {
+    "/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/FruTech.Backend.API.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "E:\\Github\\Backend-FruTech\\FruTech.Backend.API\\FruTech.Backend.API.csproj",
+        "projectUniqueName": "/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/FruTech.Backend.API.csproj",
         "projectName": "FruTech.Backend.API",
-        "projectPath": "E:\\Github\\Backend-FruTech\\FruTech.Backend.API\\FruTech.Backend.API.csproj",
-        "packagesPath": "C:\\Users\\Gaftherman\\.nuget\\packages\\",
-        "outputPath": "E:\\Github\\Backend-FruTech\\FruTech.Backend.API\\obj\\",
+        "projectPath": "/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/FruTech.Backend.API.csproj",
+        "packagesPath": "/Users/alumnos/.nuget/packages/",
+        "outputPath": "/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
         "configFilePaths": [
-          "C:\\Users\\Gaftherman\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/Users/alumnos/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -130,7 +124,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/9.0.301/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
