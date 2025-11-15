@@ -21,7 +21,7 @@ namespace  FruTech.Backend.API.CommunityRecommendation.Interfaces.REST;
 [Route("api/v1/[controller]")]
 [Produces(MediaTypeNames.Application.Json)]
 [SwaggerTag("Available Community Recommendation Endpoints")]
-public class CommunityRecomentionController(
+public class CommunityRecommendationController(
     ICommunityRecommendationQueryService communityRecommendationQueryService,
     ICommunityRecommendationCommandService communityRecommendationCommandService) : ControllerBase
 {
