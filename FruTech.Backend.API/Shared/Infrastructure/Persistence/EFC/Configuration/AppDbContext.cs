@@ -1,5 +1,7 @@
 using FruTech.Backend.API.CropFields.Domain.Model.Entities;
 using FruTech.Backend.API.Fields.Domain.Model.Entities;
+using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
+using FruTech.Backend.API.Tasks.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using UserAggregate = FruTech.Backend.API.User.Domain.Model.Aggregates.User;
@@ -9,28 +11,33 @@ using CommunityRecommendationAggregate = FruTech.Backend.API.CommunityRecommenda
 namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration
 {
     public class AppDbContext : DbContext
-    // DbSets
-    public DbSet<CommunityRecommendationAggregate> CommunityRecommendations { get; set; }
-    
-    protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        // DbSets de User y UpcomingTasks
+        // DbSets
         public DbSet<UserAggregate> Users { get; set; }
         public DbSet<UpcomingTaskAggregate> UpcomingTasks { get; set; }
-        
-        // DbSets de CropFields y Fields
+        public DbSet<CommunityRecommendationAggregate> CommunityRecommendations { get; set; }
         public DbSet<CropField> CropFields { get; set; }
         public DbSet<Field> Fields { get; set; }
         public DbSet<ProgressHistory> ProgressHistory { get; set; }
         public DbSet<FieldTask> FieldTasks { get; set; }
+        public DbSet<Tasks.Domain.Model.Aggregate.Task> Tasks { get; set; }
 
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder builder)
+        {
+            //builder.AddCreatedUpdatedInterceptor();
+            base.OnConfiguring(builder);
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // Task Context
+            builder.ApplyTaskConfiguration();
 
             // Configuración CropField
             builder.Entity<CropField>().ToTable("CropFields");
