@@ -25,4 +25,13 @@ public class CommunityRecommendation
     public string User { get; private set; }
     public string Role { get; private set; }
     public string Description { get; private set; }
+    
+    /// <summary>
+    /// Update the community recommendation
+    /// </summary>
+    public void Update(string role, string description)
+    {
+        Role = role;
+        Description = description;
+    }
 }

@@ -1,0 +1,9 @@
+/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/Release/net9.0/FruTech.Backend.API.csproj.AssemblyReference.cache
+/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/Release/net9.0/rpswa.dswa.cache.json
+/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/Release/net9.0/FruTech.Backend.API.GeneratedMSBuildEditorConfig.editorconfig
+/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/Release/net9.0/FruTech.Backend.API.AssemblyInfoInputs.cache
+/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/Release/net9.0/FruTech.Backend.API.AssemblyInfo.cs
+/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/Release/net9.0/FruTech.Backend.API.csproj.CoreCompileInputs.cache
+/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/Release/net9.0/FruTech.Backend.API.MvcApplicationPartsAssemblyInfo.cs
+/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/Release/net9.0/FruTech.Backend.API.MvcApplicationPartsAssemblyInfo.cache
+/Users/alumnos/Downloads/backend-frutech/Backend-FruTech/FruTech.Backend.API/obj/Release/net9.0/FruTech.Backend.API.sourcelink.json

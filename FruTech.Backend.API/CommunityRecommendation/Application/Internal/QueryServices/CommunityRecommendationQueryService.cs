@@ -1,4 +1,4 @@
-namespace FruTech.Backend.API.CommunityRecommendation.Interfaces.REST.Transform;
+namespace FruTech.Backend.API.CommunityRecommendation.Application.Internal.QueryServices;
 
 /// <summary>
 /// Query Service for Community Recommendations

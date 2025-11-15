@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3fe52dc4-eb0d-441f-93b8-90a3486022d1" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Infrastructure/Persistence/EFC/Configuration/CommunityRecommendationConfiguration.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Infrastructure/Persistence/EFC/Configuration/CommunityRecommendationConfiguration.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Interfaces/REST/Transform/CommunityRecommendationResourceFromEntityAssembler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Interfaces/REST/Transform/CommunityRecommendationResourceFromEntityAssembler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FruTech.Backend.API/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FruTech.Backend.API/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FruTech.Backend.API/Shared/Infrastructure/Persistence/EFC/Configuration/AppDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FruTech.Backend.API/Shared/Infrastructure/Persistence/EFC/Configuration/AppDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FruTech.Backend.API/obj/Debug/net9.0/FruTech.Backend.API.AssemblyInfo.cs" beforeDir="false" afterPath="$PROJECT_DIR$/FruTech.Backend.API/obj/Debug/net9.0/FruTech.Backend.API.AssemblyInfo.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FruTech.Backend.API/obj/Debug/net9.0/FruTech.Backend.API.AssemblyInfoInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/FruTech.Backend.API/obj/Debug/net9.0/FruTech.Backend.API.AssemblyInfoInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/FruTech.Backend.API/obj/Debug/net9.0/FruTech.Backend.API.sourcelink.json" beforeDir="false" afterPath="$PROJECT_DIR$/FruTech.Backend.API/obj/Debug/net9.0/FruTech.Backend.API.sourcelink.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="develop" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;FernandezAlexander&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Apps-Web-Grupo-4-FruTech/Backend-FruTech.git&quot;,
+    &quot;accountId&quot;: &quot;5ee66214-7b00-404b-b083-3426ae86248b&quot;
+  }
+}</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Application/Internal/CommandServices/CommunityRecommendationCommandService.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Application/Internal/EventHandlers/CommunityRecommendationCreatedEventHandler.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Application/Internal/QueryServices/CommunityRecommendationQueryService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Domain/Model/Aggregates/CommunityRecommendation.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Domain/Model/Commands/CreateCommunityRecommendationCommand.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Domain/Model/Commands/UpdateCommunityRecommendationCommand.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Domain/Model/Queries/GetAllCommunityRecommendationsQuery.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Domain/Model/Queries/GetCommunityRecommendationByIdQuery.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Domain/Repositories/ICommunityRecommendationRepository.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Domain/Services/ICommunityRecommendationCommandService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Domain/Services/ICommunityRecommendationQueryService.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Infrastructure/Persistence/EFC/Configuration/CommunityRecommendationConfiguration.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Infrastructure/Persistence/EFC/Repositories/CommunityRecommendationRepository.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Interfaces/REST/CommunityRecomentionController.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Interfaces/REST/Resources/CommunityRecommendationResource.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Interfaces/REST/Resources/CreateCommunityRecommendationResource.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Interfaces/REST/Transform/CommunityRecommendationResourceFromEntityAssembler.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/CommunityRecommendation/Interfaces/REST/Transform/CreateCommunityRecommendationCommandFromResourceAssembler.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/Program.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/FruTech.Backend.API/Shared/Infrastructure/Persistence/EFC/Configuration/AppDbContext.cs" root0="SKIP_HIGHLIGHTING" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="35Vyx9gKYx5ILTj7YXWwitfAENU" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;feature/community&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3fe52dc4-eb0d-441f-93b8-90a3486022d1" name="Changes" comment="" />
+      <created>1743806869093</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1743806869093</updated>
+      <workItem from="1743806870260" duration="964000" />
+      <workItem from="1763209779234" duration="2023000" />
+      <workItem from="1763211822519" duration="2807000" />
+      <workItem from="1763214672195" duration="116000" />
+      <workItem from="1763214869799" duration="4281000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+  <component name="VcsManagerConfiguration">
+    <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.OperationCanceledException" breakIfHandledByOtherCode="false" displayValue="System.OperationCanceledException" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.Tasks.TaskCanceledException" breakIfHandledByOtherCode="false" displayValue="System.Threading.Tasks.TaskCanceledException" />
+          <option name="timeStamp" value="2" />
+        </breakpoint>
+        <breakpoint enabled="true" type="DotNet_Exception_Breakpoints">
+          <properties exception="System.Threading.ThreadAbortException" breakIfHandledByOtherCode="false" displayValue="System.Threading.ThreadAbortException" />
+          <option name="timeStamp" value="3" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>

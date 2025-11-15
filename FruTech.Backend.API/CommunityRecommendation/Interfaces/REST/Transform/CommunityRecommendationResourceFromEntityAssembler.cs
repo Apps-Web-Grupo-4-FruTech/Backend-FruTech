@@ -1,5 +1,5 @@
-using FruTech.Backend.API.CommunityRecommendation.Domain.Model.Commands;
 using FruTech.Backend.API.CommunityRecommendation.Interfaces.REST.Resources;
+using CommunityRecommendationAggregate = FruTech.Backend.API.CommunityRecommendation.Domain.Model.Aggregates.CommunityRecommendation;
 
 namespace FruTech.Backend.API.CommunityRecommendation.Interfaces.REST.Transform;
 
@@ -12,11 +12,11 @@ public static class CommunityRecommendationResourceFromEntityAssembler
     /// Convert CommunityRecommendation to CommunityRecommendationResource
     /// </summary>
     /// <param name="entity">
-    /// the <see cref="CommunityRecommendation"/> entity
+    /// the <see cref="CommunityRecommendationAggregate"/> entity
     /// </param>
     /// the <see cref="CommunityRecommendationResource"/> resource
     /// <returns></returns>
-    public static CommunityRecommendationResource ToResourceFromEntity(CommunityRecommendation entity)
+    public static CommunityRecommendationResource ToResourceFromEntity(CommunityRecommendationAggregate entity)
     {
         return new CommunityRecommendationResource(
             entity.Id,
