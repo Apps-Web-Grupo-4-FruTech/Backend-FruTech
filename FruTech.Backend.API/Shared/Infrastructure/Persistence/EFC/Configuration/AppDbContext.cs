@@ -1,9 +1,7 @@
-// csharp
 using FruTech.Backend.API.CropFields.Domain.Model.Entities;
 using FruTech.Backend.API.Fields.Domain.Model.Entities;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
-
 using UserAggregate = FruTech.Backend.API.User.Domain.Model.Aggregates.User;
 using UpcomingTaskAggregate = FruTech.Backend.API.UpcomingTasks.Domain.Model.Aggregates.UpcomingTask;
 using CommunityRecommendationAggregate = FruTech.Backend.API.CommunityRecommendation.Domain.Model.Aggregates.CommunityRecommendation;
@@ -11,12 +9,15 @@ using CommunityRecommendationAggregate = FruTech.Backend.API.CommunityRecommenda
 namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration
 {
     public class AppDbContext : DbContext
+    // DbSets
+    public DbSet<CommunityRecommendationAggregate> CommunityRecommendations { get; set; }
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder builder)
     {
-        // DbSets de User, UpcomingTasks y CommunityRecommendations
+        // DbSets de User y UpcomingTasks
         public DbSet<UserAggregate> Users { get; set; }
         public DbSet<UpcomingTaskAggregate> UpcomingTasks { get; set; }
-        public DbSet<CommunityRecommendationAggregate> CommunityRecommendations { get; set; }
-
+        
         // DbSets de CropFields y Fields
         public DbSet<CropField> CropFields { get; set; }
         public DbSet<Field> Fields { get; set; }
