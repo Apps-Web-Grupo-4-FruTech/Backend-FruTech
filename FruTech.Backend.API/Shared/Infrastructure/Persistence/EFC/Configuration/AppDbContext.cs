@@ -55,7 +55,9 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             builder.Entity<Field>().Property(f => f.Location).HasMaxLength(300);
             builder.Entity<Field>().Property(f => f.ImageUrl).HasMaxLength(500);
             builder.Entity<Field>().Property(f => f.FieldSize).HasMaxLength(50);
-            
+            // Nueva propiedad CropFieldId
+            builder.Entity<Field>().Property(f => f.CropFieldId).IsRequired(false);
+
             // Relación User 1:N Fields
             builder.Entity<Field>()
                 .HasOne<UserAggregate>()
@@ -72,22 +74,24 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             builder.Entity<CropField>().Property(c => c.SoilType).HasMaxLength(100);
             builder.Entity<CropField>().Property(c => c.Watering).HasMaxLength(200);
             builder.Entity<CropField>().Property(c => c.Sunlight).HasMaxLength(100);
-            
+
             // Mapear enum Status como string
             builder.Entity<CropField>()
                 .Property(c => c.Status)
                 .HasConversion<string>()
                 .IsRequired()
                 .HasMaxLength(50);
-            
+
             // Relación Field 1:1 CropField usando navegación Field.CropField
             builder.Entity<Field>()
                 .HasOne(f => f.CropField)
                 .WithOne()
                 .HasForeignKey<CropField>(c => c.FieldId)
                 .OnDelete(DeleteBehavior.Cascade);
-            
+
             builder.Entity<CropField>().HasIndex(c => c.FieldId).IsUnique();
+            // Índice opcional en fields para acelerar lookup por crop_field_id
+            builder.Entity<Field>().HasIndex(f => f.CropFieldId).IsUnique(false);
 
             // ========== PROGRESSHISTORY (1:1 con Field) ==========
             builder.Entity<ProgressHistory>().ToTable("progress_histories");

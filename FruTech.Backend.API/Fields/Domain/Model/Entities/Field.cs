@@ -25,6 +25,12 @@ namespace FruTech.Backend.API.Fields.Domain.Model.Entities
         public string FieldSize { get; set; } = string.Empty; // e.g. "5,000 m2"
 
         /// <summary>
+        /// FK opcional al CropField (se actualizará cuando se cree el CropField 1:1)
+        /// </summary>
+        [JsonPropertyName("crop_field_id")]
+        public int? CropFieldId { get; set; }
+
+        /// <summary>
         /// Relación 1:1 con ProgressHistory
         /// </summary>
         public ProgressHistory? ProgressHistory { get; set; }
@@ -35,6 +41,7 @@ namespace FruTech.Backend.API.Fields.Domain.Model.Entities
         /// <summary>
         /// Relación 1:N con Tasks
         /// </summary>
+        [JsonPropertyName("tasks")]
         public ICollection<FruTech.Backend.API.Tasks.Domain.Model.Aggregate.Task>? Tasks { get; set; }
     }
 }

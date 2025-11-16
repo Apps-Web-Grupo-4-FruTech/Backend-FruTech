@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using FruTech.Backend.API.Shared.Domain.Repositories;
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Repositories;
@@ -34,14 +35,14 @@ using Cortex.Mediator;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Forzar que Kestrel escuche en http://localhost:5073 para evitar conflictos con el puerto 5000
-//builder.WebHost.UseUrls("http://localhost:5073");
+// Eliminar binding forzado para evitar conflicto de puertos; se usará el puerto de launchSettings.json
+// builder.WebHost.UseUrls("http://localhost:5073");
 
 // CORS Configuration
 const string FrontendCorsPolicy = "FrontendCorsPolicy";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("FrontendCorsPolicy", policy =>
+    options.AddPolicy(FrontendCorsPolicy, policy =>
     {
         policy.AllowAnyOrigin()
               .AllowAnyMethod()
@@ -110,17 +111,22 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Crear/migrar la base de datos automáticamente usando migraciones
+// Limpieza de tablas de migraciones y UpcomingTasks si existen, sin usar sistema de migraciones
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
-        dbContext.Database.Migrate();
+        dbContext.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS `__EFMigrationsHistory`;");
+        dbContext.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS `UpcomingTasks`;");
+        dbContext.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS `upcoming_tasks`;");
+
+        // Crear esquema si no existe (solo crea tablas faltantes)
+        dbContext.Database.EnsureCreated();
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Error al migrar la base de datos: {ex.Message}");
+        Console.WriteLine($"Error al inicializar la base de datos sin migraciones: {ex.Message}");
     }
 }
 
