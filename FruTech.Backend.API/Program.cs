@@ -41,10 +41,9 @@ builder.WebHost.UseUrls("http://localhost:5073");
 const string FrontendCorsPolicy = "FrontendCorsPolicy";
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(FrontendCorsPolicy, policy =>
+    options.AddPolicy("FrontendCorsPolicy", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
-              .AllowAnyOrigin()
+        policy.AllowAnyOrigin()
               .AllowAnyMethod()
               .AllowAnyHeader();
     });
