@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FruTech.Backend.API.Fields.Domain.Model.Entities
 {
@@ -8,7 +9,7 @@ namespace FruTech.Backend.API.Fields.Domain.Model.Entities
         public int Id { get; set; }
 
         /// <summary>
-        /// ID del usuario propietario del campo
+        /// ID of the user who owns the field
         /// </summary>
         public int UserId { get; set; }
 
@@ -25,21 +26,23 @@ namespace FruTech.Backend.API.Fields.Domain.Model.Entities
         public string FieldSize { get; set; } = string.Empty; // e.g. "5,000 m2"
 
         /// <summary>
-        /// FK opcional al CropField (se actualizará cuando se cree el CropField 1:1)
+        /// Optional FK to CropField (will be updated when CropField 1:1 is created)
+        /// Not mapped in DB to avoid errors if the column doesn't exist.
         /// </summary>
+        [NotMapped]
         [JsonPropertyName("crop_field_id")]
         public int? CropFieldId { get; set; }
 
         /// <summary>
-        /// Relación 1:1 con ProgressHistory
+        /// 1:1 relationship with ProgressHistory
         /// </summary>
         public ProgressHistory? ProgressHistory { get; set; }
         /// <summary>
-        /// Relación 1:1 con CropField
+        /// 1:1 relationship with CropField
         /// </summary>
         public FruTech.Backend.API.CropFields.Domain.Model.Entities.CropField? CropField { get; set; }
         /// <summary>
-        /// Relación 1:N con Tasks
+        /// 1:N relationship with Tasks
         /// </summary>
         [JsonPropertyName("tasks")]
         public ICollection<FruTech.Backend.API.Tasks.Domain.Model.Aggregate.Task>? Tasks { get; set; }

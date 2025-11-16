@@ -7,7 +7,7 @@ using FruTech.Backend.API.Shared.Domain.Repositories;
 namespace FruTech.Backend.API.Fields.Application.Internal.CommandServices;
 
 /// <summary>
-/// Servicio de comandos para Field
+/// Command service for Field
 /// </summary>
 public class FieldCommandService : IFieldCommandService
 {
@@ -27,7 +27,7 @@ public class FieldCommandService : IFieldCommandService
 
     public async Task<Field> Handle(CreateFieldCommand command)
     {
-        // Crear el Field
+        // Create the Field
         var field = new Field
         {
             UserId = command.UserId,
@@ -40,13 +40,15 @@ public class FieldCommandService : IFieldCommandService
         await _fieldRepository.AddAsync(field);
         await _unitOfWork.CompleteAsync();
 
-        // Crear ProgressHistory asociado automáticamente (relación 1:1)
+        // Create associated ProgressHistory automatically (1:1 relationship)
         var progressHistory = new ProgressHistory
         {
             FieldId = field.Id,
             Watered = DateTime.UtcNow,
             Fertilized = DateTime.UtcNow,
-            Pests = DateTime.UtcNow
+            Pests = DateTime.UtcNow,
+            CreatedDate = DateTimeOffset.UtcNow,
+            UpdatedDate = null
         };
 
         await _progressHistoryRepository.AddAsync(progressHistory);

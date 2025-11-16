@@ -19,7 +19,11 @@ public class TaskCommandService : ITaskCommandService
             command.Description,
             command.DueDate,
             command.FieldId
-        );
+        )
+        {
+            CreatedDate = DateTimeOffset.UtcNow,
+            UpdatedDate = null
+        };
 
         return await _taskRepository.CreateAsync(task);
     }
@@ -31,7 +35,8 @@ public class TaskCommandService : ITaskCommandService
             Id = command.Id,
             Description = command.Description,
             DueDate = command.DueDate,
-            FieldId = command.FieldId
+            FieldId = command.FieldId,
+            UpdatedDate = DateTimeOffset.UtcNow
         };
 
         return await _taskRepository.UpdateAsync(command.Id, task);

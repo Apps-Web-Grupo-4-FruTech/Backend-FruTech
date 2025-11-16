@@ -6,5 +6,5 @@ namespace FruTech.Backend.API.User.Interfaces.REST.Transform;
 public static class UserResourceFromEntityAssembler
 {
     public static UserResource ToResourceFromEntity(UserAggregate entity)
-        => new(entity.Id, entity.UserName, entity.Email, entity.PhoneNumber, entity.Identificator);
+        => new(entity.Id, entity.UserName, entity.Email, entity.PhoneNumber, entity.Identificator, entity.CreatedDate, entity.UpdatedDate);
 }

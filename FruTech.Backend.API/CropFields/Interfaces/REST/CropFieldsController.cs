@@ -6,7 +6,7 @@ using FruTech.Backend.API.CropFields.Domain.Services;
 namespace FruTech.Backend.API.CropFields.Interfaces.REST;
 
 /// <summary>
-/// Controlador para la gestión de CropFields (cultivos asociados a campos)
+/// Controller for managing CropFields (crops associated with fields)
 /// </summary>
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -24,11 +24,11 @@ public class CropFieldsController : ControllerBase
     }
 
     /// <summary>
-    /// Crea un nuevo CropField asociado a un Field (relación 1:1)
+    /// Creates a new CropField associated with a Field (1:1 relationship)
     /// </summary>
-    /// <param name="command">Datos del CropField</param>
-    /// <response code="201">CropField creado correctamente</response>
-    /// <response code="400">Ya existe un CropField para ese Field o datos inválidos</response>
+    /// <param name="command">CropField data</param>
+    /// <response code="201">CropField created successfully</response>
+    /// <response code="400">A CropField already exists for this Field or invalid data</response>
     [HttpPost]
     public async Task<IActionResult> CreateCropField([FromBody] CreateCropFieldCommand command)
     {
@@ -48,9 +48,9 @@ public class CropFieldsController : ControllerBase
     }
 
     /// <summary>
-    /// Obtiene todos los CropFields
+    /// Gets all CropFields
     /// </summary>
-    /// <response code="200">Lista de CropFields</response>
+    /// <response code="200">List of CropFields</response>
     [HttpGet]
     public async Task<IActionResult> GetAllCropFields()
     {
@@ -59,11 +59,11 @@ public class CropFieldsController : ControllerBase
     }
 
     /// <summary>
-    /// Obtiene un CropField por ID
+    /// Gets a CropField by ID
     /// </summary>
-    /// <param name="id">ID del CropField</param>
-    /// <response code="200">CropField encontrado</response>
-    /// <response code="404">CropField no encontrado</response>
+    /// <param name="id">CropField ID</param>
+    /// <response code="200">CropField found</response>
+    /// <response code="404">CropField not found</response>
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetCropFieldById(int id)
     {
@@ -73,11 +73,11 @@ public class CropFieldsController : ControllerBase
     }
 
     /// <summary>
-    /// Obtiene el CropField asociado a un Field (relación 1:1)
+    /// Gets the CropField associated with a Field (1:1 relationship)
     /// </summary>
-    /// <param name="fieldId">ID del Field</param>
-    /// <response code="200">CropField encontrado</response>
-    /// <response code="404">No existe CropField para ese Field</response>
+    /// <param name="fieldId">Field ID</param>
+    /// <response code="200">CropField found</response>
+    /// <response code="404">No CropField exists for this Field</response>
     [HttpGet("field/{fieldId:int}")]
     public async Task<IActionResult> GetCropFieldByFieldId(int fieldId)
     {
@@ -87,17 +87,18 @@ public class CropFieldsController : ControllerBase
     }
 
     /// <summary>
-    /// Actualiza el status de un CropField (Healthy, Attention, Critical)
+    /// Updates the crop attribute of a CropField
     /// </summary>
-    /// <param name="id">ID del CropField</param>
-    /// <param name="command">Nuevo status</param>
-    /// <response code="200">Status actualizado correctamente</response>
-    /// <response code="404">CropField no encontrado</response>
-    [HttpPut("{id:int}/status")]
-    public async Task<IActionResult> UpdateCropFieldStatus(int id, [FromBody] UpdateCropFieldStatusCommand command)
+    /// <param name="id">CropField ID</param>
+    /// <param name="command">New crop value</param>
+    /// <response code="200">Crop updated successfully</response>
+    /// <response code="404">CropField not found</response>
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> UpdateCropField(int id, [FromBody] UpdateCropFieldCommand command)
     {
         if (id != command.CropFieldId)
-            return BadRequest(new { message = "El ID no coincide" });
+            return BadRequest(new { message = "ID mismatch" });
+
 
         var cropField = await _commandService.Handle(command);
         if (cropField == null) return NotFound();

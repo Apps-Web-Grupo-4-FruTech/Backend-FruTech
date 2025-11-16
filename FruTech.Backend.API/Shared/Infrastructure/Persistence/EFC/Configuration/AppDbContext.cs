@@ -30,6 +30,40 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             base.OnConfiguring(builder);
         }
 
+        // Ensure CreatedDate and UpdatedDate are populated automatically
+        public override int SaveChanges()
+        {
+            UpdateTimestamps();
+            return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            UpdateTimestamps();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateTimestamps()
+        {
+            var now = DateTimeOffset.Now; // use device local time per user request
+
+            foreach (var entry in ChangeTracker.Entries())
+            {
+                if (entry.Entity is Shared.Domain.Model.ValueObjects.IEntityWithCreatedUpdatedDate auditable)
+                {
+                    if (entry.State == EntityState.Added)
+                    {
+                        auditable.CreatedDate = auditable.CreatedDate ?? now;
+                        auditable.UpdatedDate = auditable.UpdatedDate ?? now;
+                    }
+                    else if (entry.State == EntityState.Modified)
+                    {
+                        auditable.UpdatedDate = now;
+                    }
+                }
+            }
+        }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -55,8 +89,6 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             builder.Entity<Field>().Property(f => f.Location).HasMaxLength(300);
             builder.Entity<Field>().Property(f => f.ImageUrl).HasMaxLength(500);
             builder.Entity<Field>().Property(f => f.FieldSize).HasMaxLength(50);
-            // Nueva propiedad CropFieldId
-            builder.Entity<Field>().Property(f => f.CropFieldId).IsRequired(false);
 
             // Relación User 1:N Fields
             builder.Entity<Field>()
@@ -90,8 +122,6 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<CropField>().HasIndex(c => c.FieldId).IsUnique();
-            // Índice opcional en fields para acelerar lookup por crop_field_id
-            builder.Entity<Field>().HasIndex(f => f.CropFieldId).IsUnique(false);
 
             // ========== PROGRESSHISTORY (1:1 con Field) ==========
             builder.Entity<ProgressHistory>().ToTable("progress_histories");

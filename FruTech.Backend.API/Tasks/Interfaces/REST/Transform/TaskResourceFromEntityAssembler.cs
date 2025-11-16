@@ -10,7 +10,9 @@ public static class TaskResourceFromEntityAssembler
             entity.Id,
             entity.FieldId,
             entity.Description,
-            entity.DueDate
+            entity.DueDate,
+            entity.CreatedDate,
+            entity.UpdatedDate
         );
     }
 }

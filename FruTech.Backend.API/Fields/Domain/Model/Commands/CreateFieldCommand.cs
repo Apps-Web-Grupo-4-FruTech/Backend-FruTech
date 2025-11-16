@@ -1,7 +1,7 @@
-﻿namespace FruTech.Backend.API.Fields.Domain.Model.Commands;
+﻿﻿namespace FruTech.Backend.API.Fields.Domain.Model.Commands;
 
 /// <summary>
-/// Comando para crear un campo (Field) y su ProgressHistory asociado automáticamente
+/// Command to create a field (Field) and its associated ProgressHistory automatically
 /// </summary>
 public record CreateFieldCommand(
     int UserId,

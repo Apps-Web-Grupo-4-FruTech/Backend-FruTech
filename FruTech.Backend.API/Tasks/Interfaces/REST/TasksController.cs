@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace FruTech.Backend.API.Tasks.Interfaces.REST;
 
 /// <summary>
-/// Controlador para la gestión de tareas asociadas a campos.
+/// Controller for managing tasks associated with fields.
 /// </summary>
 [ApiController]
 [Route("api/[controller]")]
@@ -24,9 +24,9 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// Obtiene todas las tareas registradas.
+    /// Gets all registered tasks.
     /// </summary>
-    /// <response code="200">Lista de tareas recuperada correctamente.</response>
+    /// <response code="200">Task list retrieved successfully.</response>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TaskResource>>> GetAllTasks()
     {
@@ -37,11 +37,11 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// Obtiene una tarea específica por su identificador.
+    /// Gets a specific task by its identifier.
     /// </summary>
-    /// <param name="id">Identificador de la tarea.</param>
-    /// <response code="200">Tarea encontrada.</response>
-    /// <response code="404">No existe una tarea con el identificador proporcionado.</response>
+    /// <param name="id">Task identifier.</param>
+    /// <response code="200">Task found.</response>
+    /// <response code="404">No task found with the provided identifier.</response>
     [HttpGet("{id}")]
     public async Task<ActionResult<TaskResource>> GetTaskById(int id)
     {
@@ -56,10 +56,10 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// Obtiene las tareas asociadas a un campo específico.
+    /// Gets tasks associated with a specific field.
     /// </summary>
-    /// <param name="fieldId">Identificador del campo.</param>
-    /// <response code="200">Lista de tareas asociadas al campo.</response>
+    /// <param name="fieldId">Field identifier.</param>
+    /// <response code="200">List of tasks associated with the field.</response>
     [HttpGet("field/{fieldId:int}")]
     public async Task<ActionResult<IEnumerable<TaskResource>>> GetTasksByField(int fieldId)
     {
@@ -70,11 +70,11 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// Crea una nueva tarea.
+    /// Creates a new task.
     /// </summary>
-    /// <param name="resource">Datos de la tarea a crear.</param>
-    /// <response code="201">Tarea creada correctamente.</response>
-    /// <response code="400">Datos de entrada inválidos.</response>
+    /// <param name="resource">Task data to create.</param>
+    /// <response code="201">Task created successfully.</response>
+    /// <response code="400">Invalid input data.</response>
     [HttpPost]
     public async Task<ActionResult<TaskResource>> CreateTask([FromBody] CreateTaskResource resource)
     {
@@ -85,12 +85,12 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// Actualiza los datos de una tarea existente.
+    /// Updates data of an existing task.
     /// </summary>
-    /// <param name="id">Identificador de la tarea a actualizar.</param>
-    /// <param name="resource">Datos actualizados de la tarea.</param>
-    /// <response code="200">Tarea actualizada correctamente.</response>
-    /// <response code="404">No existe una tarea con el identificador proporcionado.</response>
+    /// <param name="id">Task identifier to update.</param>
+    /// <param name="resource">Updated task data.</param>
+    /// <response code="200">Task updated successfully.</response>
+    /// <response code="404">No task found with the provided identifier.</response>
     [HttpPut("{id}")]
     public async Task<ActionResult<TaskResource>> UpdateTask(int id, [FromBody] EditTaskResource resource)
     {
@@ -105,11 +105,11 @@ public class TasksController : ControllerBase
     }
 
     /// <summary>
-    /// Elimina una tarea.
+    /// Deletes a task.
     /// </summary>
-    /// <param name="id">Identificador de la tarea a eliminar.</param>
-    /// <response code="204">Tarea eliminada correctamente.</response>
-    /// <response code="404">No existe una tarea con el identificador proporcionado.</response>
+    /// <param name="id">Task identifier to delete.</param>
+    /// <response code="204">Task deleted successfully.</response>
+    /// <response code="404">No task found with the provided identifier.</response>
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteTask(int id)
     {

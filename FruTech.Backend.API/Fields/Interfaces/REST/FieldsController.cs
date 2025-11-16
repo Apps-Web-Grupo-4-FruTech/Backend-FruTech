@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using FruTech.Backend.API.Fields.Domain.Model.Commands;
 using FruTech.Backend.API.Fields.Domain.Model.Queries;
 using FruTech.Backend.API.Fields.Domain.Services;
+using FruTech.Backend.API.Fields.Interfaces.REST.Resources;
+using FruTech.Backend.API.Fields.Interfaces.REST.Transform;
 
 namespace FruTech.Backend.API.Fields.Interfaces.REST;
 
 /// <summary>
-/// Controlador para la gestión de campos agrícolas (Fields)
+/// Controller for managing agricultural fields
 /// </summary>
 [ApiController]
 [Route("api/v1/[controller]")]
@@ -24,11 +26,11 @@ public class FieldsController : ControllerBase
     }
 
     /// <summary>
-    /// Crea un nuevo campo y su ProgressHistory asociado automáticamente
+    /// Creates a new field and its associated ProgressHistory automatically
     /// </summary>
-    /// <param name="command">Datos del comando CreateField (UserId, ImageUrl, Name, Location, FieldSize)</param>
-    /// <response code="201">Campo creado correctamente</response>
-    /// <response code="400">Datos inválidos</response>
+    /// <param name="command">CreateField command data (UserId, ImageUrl, Name, Location, FieldSize)</param>
+    /// <response code="201">Field created successfully</response>
+    /// <response code="400">Invalid data</response>
     [HttpPost]
     public async Task<IActionResult> CreateField(
         [FromBody] CreateFieldCommand command)
@@ -36,7 +38,8 @@ public class FieldsController : ControllerBase
         try
         {
             var field = await _fieldCommandService.Handle(command);
-            return CreatedAtAction(nameof(GetFieldById), new { id = field.Id }, field);
+            var resource = FieldResourceFromEntityAssembler.ToResource(field);
+            return CreatedAtAction(nameof(GetFieldById), new { id = field.Id }, resource);
         }
         catch (Exception ex)
         {
@@ -45,29 +48,28 @@ public class FieldsController : ControllerBase
     }
 
     /// <summary>
-    /// Obtiene todos los campos de un usuario
+    /// Gets all fields for a user
     /// </summary>
-    /// <param name="userId">ID del usuario</param>
-    /// <response code="200">Lista de campos del usuario</response>
+    /// <param name="userId">User ID</param>
+    /// <response code="200">List of user fields</response>
     [HttpGet("user/{userId:int}")]
-    public async Task<IActionResult> GetFieldsByUserId(int userId)
+    public async Task<ActionResult<IEnumerable<FieldResource>>> GetFieldsByUserId(int userId)
     {
-        var fields = await _fieldQueryService.Handle(new GetFieldsByUserIdQuery(userId));
-        return Ok(fields);
+        var resources = await _fieldQueryService.Handle(new GetFieldsByUserIdQuery(userId));
+        return Ok(resources);
     }
 
     /// <summary>
-    /// Obtiene un campo por ID
+    /// Gets a field by ID
     /// </summary>
-    /// <param name="id">ID del campo</param>
-    /// <response code="200">Campo encontrado</response>
-    /// <response code="404">Campo no encontrado</response>
+    /// <param name="id">Field ID</param>
+    /// <response code="200">Field found</response>
+    /// <response code="404">Field not found</response>
     [HttpGet("{id:int}")]
-    public async Task<IActionResult> GetFieldById(int id)
+    public async Task<ActionResult<FieldResource>> GetFieldById(int id)
     {
-        var field = await _fieldQueryService.Handle(new GetFieldByIdQuery(id));
-        if (field == null) return NotFound();
-        return Ok(field);
+        var resource = await _fieldQueryService.Handle(new GetFieldByIdQuery(id));
+        if (resource == null) return NotFound();
+        return Ok(resource);
     }
 }
-

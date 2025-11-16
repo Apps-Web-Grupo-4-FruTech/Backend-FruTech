@@ -1,4 +1,4 @@
-﻿using FruTech.Backend.API.CropFields.Domain.Model.Commands;
+﻿﻿using FruTech.Backend.API.CropFields.Domain.Model.Commands;
 using FruTech.Backend.API.CropFields.Domain.Model.Entities;
 using FruTech.Backend.API.CropFields.Domain.Model.Repositories;
 using FruTech.Backend.API.CropFields.Domain.Services;
@@ -44,7 +44,7 @@ public class CropFieldCommandService : ICropFieldCommandService
         await _cropFieldRepository.AddAsync(cropField);
         await _unitOfWork.CompleteAsync();
 
-        // Actualizar el Field para apuntar al CropField creado
+        // Update the Field to point to the created CropField
         var field = await _fieldRepository.FindByIdAsync(command.FieldId);
         if (field != null)
         {
@@ -56,12 +56,14 @@ public class CropFieldCommandService : ICropFieldCommandService
         return cropField;
     }
 
-    public async Task<CropField?> Handle(UpdateCropFieldStatusCommand command)
+
+    public async Task<CropField?> Handle(UpdateCropFieldCommand command)
     {
         var cropField = await _cropFieldRepository.FindByIdAsync(command.CropFieldId);
         if (cropField == null) return null;
 
-        cropField.Status = command.Status;
+        cropField.Crop = command.Crop;
+        cropField.UpdatedDate = DateTimeOffset.UtcNow;
         _cropFieldRepository.Update(cropField);
         await _unitOfWork.CompleteAsync();
         return cropField;

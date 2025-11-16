@@ -7,7 +7,7 @@ namespace FruTech.Backend.API.Fields.Domain.Model.Entities
         public int Id { get; set; }
         
         /// <summary>
-        /// ID del campo (relación 1:1)
+        /// Field ID (1:1 relationship)
         /// </summary>
         public int FieldId { get; set; }
 

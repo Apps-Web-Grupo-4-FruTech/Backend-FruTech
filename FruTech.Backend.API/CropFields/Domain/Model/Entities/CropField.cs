@@ -8,7 +8,7 @@ namespace FruTech.Backend.API.CropFields.Domain.Model.Entities
         public int Id { get; set; }
         
         /// <summary>
-        /// ID del campo al que pertenece este cultivo (relación 1:1)
+        /// ID of the field this crop belongs to (1:1 relationship)
         /// </summary>
         public int FieldId { get; set; }
         

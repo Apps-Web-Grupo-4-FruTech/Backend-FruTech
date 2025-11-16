@@ -1,14 +1,13 @@
-﻿using FruTech.Backend.API.Fields.Domain.Model.Entities;
+﻿using FruTech.Backend.API.Fields.Interfaces.REST.Resources;
 using FruTech.Backend.API.Fields.Domain.Model.Queries;
 
 namespace FruTech.Backend.API.Fields.Domain.Services;
 
 /// <summary>
-/// Servicio de consultas para Field
+/// Query service for Field
 /// </summary>
 public interface IFieldQueryService
 {
-    Task<IEnumerable<Field>> Handle(GetFieldsByUserIdQuery query);
-    Task<Field?> Handle(GetFieldByIdQuery query);
+    Task<IEnumerable<FieldResource>> Handle(GetFieldsByUserIdQuery query);
+    Task<FieldResource?> Handle(GetFieldByIdQuery query);
 }
-
