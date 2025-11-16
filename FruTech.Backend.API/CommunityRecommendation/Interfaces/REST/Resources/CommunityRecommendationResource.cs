@@ -2,16 +2,9 @@ namespace FruTech.Backend.API.CommunityRecommendation.Interfaces.REST.Resources;
 
 /// <summary>
 ///     CommunityRecommendation resource for REST API
-/// <param name="id">
-///     The unique identifier of the community recommendation
-/// </param>
-/// <param name="user">
-///     The user who made the recommendation
-/// </param>
-/// <param name="role">
-///     The role of the user
-/// </param>
-/// <param name="description">
-///     The description of the recommendation
 /// </summary>
-public record CommunityRecommendationResource(int id, string user, string role, string description);
+/// <param name="Id">El identificador único de la recomendación</param>
+/// <param name="UserName">Nombre del usuario que hizo la recomendación</param>
+/// <param name="CommentDate">Fecha del comentario</param>
+/// <param name="Comment">Comentario de la recomendación</param>
+public record CommunityRecommendationResource(int Id, string UserName, DateTime CommentDate, string Comment);

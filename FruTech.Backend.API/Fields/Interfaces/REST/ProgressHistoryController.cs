@@ -6,6 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FruTech.Backend.API.Fields.Interfaces.REST
 {
+    /// <summary>
+    /// Controlador para la gestión del historial de progreso de los cultivos.
+    /// </summary>
     [ApiController]
     [Route("api/v1/progress")]
     public class ProgressHistoryController : ControllerBase
@@ -19,6 +22,10 @@ namespace FruTech.Backend.API.Fields.Interfaces.REST
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Obtiene todos los registros de historial de progreso.
+        /// </summary>
+        /// <response code="200">Lista de historiales recuperada correctamente.</response>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -26,6 +33,12 @@ namespace FruTech.Backend.API.Fields.Interfaces.REST
             return Ok(items);
         }
 
+        /// <summary>
+        /// Obtiene un historial de progreso por su identificador.
+        /// </summary>
+        /// <param name="id">Identificador del historial.</param>
+        /// <response code="200">Historial encontrado.</response>
+        /// <response code="404">No existe un historial con el identificador proporcionado.</response>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -34,6 +47,11 @@ namespace FruTech.Backend.API.Fields.Interfaces.REST
             return Ok(item);
         }
 
+        /// <summary>
+        /// Crea un nuevo registro de historial de progreso.
+        /// </summary>
+        /// <param name="progressHistory">Datos del historial de progreso a crear.</param>
+        /// <response code="201">Historial creado correctamente.</response>
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ProgressHistory progressHistory)
         {
@@ -53,21 +71,18 @@ namespace FruTech.Backend.API.Fields.Interfaces.REST
             await _progressRepo.AddAsync(progressHistory);
             await _unitOfWork.CompleteAsync();
 
-            // Vincular automáticamente con Field si FieldId > 0
-            if (progressHistory.FieldId > 0 && db != null)
-            {
-                var fieldEntity = await db.Fields.FirstOrDefaultAsync(f => f.Id == progressHistory.FieldId);
-                if (fieldEntity != null)
-                {
-                    fieldEntity.ProgressId = progressHistory.Id;
-                    db.Fields.Update(fieldEntity);
-                    await db.SaveChangesAsync();
-                }
-            }
+            // Eliminado: asignación de ProgressHistoryId inexistente. La relación se resuelve por FieldId en ProgressHistory.
 
             return CreatedAtAction(nameof(GetById), new { id = progressHistory.Id }, progressHistory);
         }
 
+        /// <summary>
+        /// Actualiza un registro de historial de progreso.
+        /// </summary>
+        /// <param name="id">Identificador del historial a actualizar.</param>
+        /// <param name="progressHistory">Datos actualizados del historial.</param>
+        /// <response code="204">Historial actualizado correctamente.</response>
+        /// <response code="404">No existe un historial con el identificador proporcionado.</response>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] ProgressHistory progressHistory)
         {
@@ -77,9 +92,9 @@ namespace FruTech.Backend.API.Fields.Interfaces.REST
 
             // Actualizar propiedades
             existing.FieldId = progressHistory.FieldId;
-            if (progressHistory.Watered.HasValue) existing.Watered = progressHistory.Watered;
-            if (progressHistory.Fertilized.HasValue) existing.Fertilized = progressHistory.Fertilized;
-            if (progressHistory.Pests.HasValue) existing.Pests = progressHistory.Pests;
+            existing.Watered = progressHistory.Watered;
+            existing.Fertilized = progressHistory.Fertilized;
+            existing.Pests = progressHistory.Pests;
 
             _progressRepo.Update(existing);
             await _unitOfWork.CompleteAsync();

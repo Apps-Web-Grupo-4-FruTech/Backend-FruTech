@@ -5,6 +5,9 @@
         <RootNamespace>FruTech.Backend.API</RootNamespace>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <NoWarn>$(NoWarn);1591</NoWarn>
+        <DocumentationFile>bin\Debug\net9.0\FruTech.Backend.API.xml</DocumentationFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -29,10 +32,6 @@
 
     <ItemGroup>
       <Folder Include="CommunityRecommendation\" />
-      <Folder Include="PreviewFields\" />
-      <Folder Include="Recommendations\" />
-      <Folder Include="Task\" />
-      <Folder Include="UpcomingTasks\" />
       <Folder Include="User\" />
     </ItemGroup>
 

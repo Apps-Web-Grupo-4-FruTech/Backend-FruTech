@@ -21,13 +21,13 @@ public class TaskRepository : ITaskRepository
     public async Task<Domain.Model.Aggregate.Task?> GetByIdAsync(int id)
     {
         return await _context.Set<Domain.Model.Aggregate.Task>()
-            .FirstOrDefaultAsync(t => t.id == id);
+            .FirstOrDefaultAsync(t => t.Id == id);
     }
 
-    public async Task<IEnumerable<Domain.Model.Aggregate.Task>> GetByFieldAsync(string field)
+    public async Task<IEnumerable<Domain.Model.Aggregate.Task>> GetByFieldIdAsync(int fieldId)
     {
         return await _context.Set<Domain.Model.Aggregate.Task>()
-            .Where(t => t.field == field)
+            .Where(t => t.FieldId == fieldId)
             .ToListAsync();
     }
 
@@ -43,9 +43,9 @@ public class TaskRepository : ITaskRepository
         var existingTask = await GetByIdAsync(id);
         if (existingTask == null) return null;
 
-        existingTask.description = task.description;
-        existingTask.due_date = task.due_date;
-        existingTask.field = task.field;
+        existingTask.Description = task.Description;
+        existingTask.DueDate = task.DueDate;
+        existingTask.FieldId = task.FieldId;
 
         _context.Set<Domain.Model.Aggregate.Task>().Update(existingTask);
         await _context.SaveChangesAsync();
@@ -62,4 +62,3 @@ public class TaskRepository : ITaskRepository
         return true;
     }
 }
-

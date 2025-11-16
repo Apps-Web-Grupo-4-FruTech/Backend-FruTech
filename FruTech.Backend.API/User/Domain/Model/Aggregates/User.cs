@@ -1,8 +1,7 @@
-using BCrypt.Net; // puede omitirse pero se deja para claridad
 
 namespace FruTech.Backend.API.User.Domain.Model.Aggregates
 {
-    public class User
+    public partial class User
     {
         public int Id { get; private set; }
         public string UserName { get; private set; } = string.Empty;

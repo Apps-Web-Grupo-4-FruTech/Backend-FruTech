@@ -11,10 +11,8 @@ public static class CreateCommunityRecommendationCommandFromResourceAssembler
     public static CreateCommunityRecommendationCommand ToCommandFromResource(CreateCommunityRecommendationResource resource)
     {
         return new CreateCommunityRecommendationCommand(
-            resource.id,
-            resource.user,
-            resource.role,
-            resource.description
+            resource.UserName,
+            resource.Comment
         );
     }
 }

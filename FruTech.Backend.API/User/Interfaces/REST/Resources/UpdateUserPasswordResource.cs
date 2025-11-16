@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
 namespace FruTech.Backend.API.User.Interfaces.REST.Resources;
 
-public record UpdateUserPasswordResource(string CurrentPassword, string NewPassword);
+public record UpdateUserPasswordResource(
+    [Required] string CurrentPassword,
+    [Required][MinLength(6)] string NewPassword);

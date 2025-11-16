@@ -1,104 +1,107 @@
-using FruTech.Backend.API.CropFields.Domain.Model.Entities;
-using FruTech.Backend.API.CropFields.Domain.Model.Repositories;
-using FruTech.Backend.API.Shared.Domain.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using FruTech.Backend.API.CropFields.Domain.Model.Commands;
+using FruTech.Backend.API.CropFields.Domain.Model.Queries;
+using FruTech.Backend.API.CropFields.Domain.Services;
 
-namespace FruTech.Backend.API.CropFields.Interfaces.REST
+namespace FruTech.Backend.API.CropFields.Interfaces.REST;
+
+/// <summary>
+/// Controlador para la gestión de CropFields (cultivos asociados a campos)
+/// </summary>
+[ApiController]
+[Route("api/v1/[controller]")]
+public class CropFieldsController : ControllerBase
 {
-    [ApiController]
-    [Route("api/v1/crop_fields")]
-    public class CropFieldsController : ControllerBase
+    private readonly ICropFieldCommandService _commandService;
+    private readonly ICropFieldQueryService _queryService;
+
+    public CropFieldsController(
+        ICropFieldCommandService commandService,
+        ICropFieldQueryService queryService)
     {
-        private readonly ICropFieldRepository _cropFieldRepository;
-        private readonly IUnitOfWork _unitOfWork;
+        _commandService = commandService;
+        _queryService = queryService;
+    }
 
-        public CropFieldsController(ICropFieldRepository cropFieldRepository, IUnitOfWork unitOfWork)
+    /// <summary>
+    /// Crea un nuevo CropField asociado a un Field (relación 1:1)
+    /// </summary>
+    /// <param name="command">Datos del CropField</param>
+    /// <response code="201">CropField creado correctamente</response>
+    /// <response code="400">Ya existe un CropField para ese Field o datos inválidos</response>
+    [HttpPost]
+    public async Task<IActionResult> CreateCropField([FromBody] CreateCropFieldCommand command)
+    {
+        try
         {
-            _cropFieldRepository = cropFieldRepository;
-            _unitOfWork = unitOfWork;
+            var cropField = await _commandService.Handle(command);
+            return CreatedAtAction(nameof(GetCropFieldById), new { id = cropField.Id }, cropField);
         }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<CropField>>> GetAllAsync()
+        catch (InvalidOperationException ex)
         {
-            var items = await _cropFieldRepository.GetAllAsync();
-            return Ok(items);
+            return BadRequest(new { message = ex.Message });
         }
-
-        [HttpGet("{id:int}")]
-        public async Task<ActionResult<CropField>> GetByIdAsync(int id)
+        catch (Exception ex)
         {
-            var item = await _cropFieldRepository.GetByIdAsync(id);
-            if (item == null) return NotFound();
-            return Ok(item);
-        }
-
-        [HttpPost]
-        public async Task<ActionResult<CropField>> PostAsync([FromBody] CropField cropField)
-        {
-            var scope = HttpContext.RequestServices.CreateScope();
-            var db = scope.ServiceProvider.GetService<FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration.AppDbContext>();
-            
-            // Si Field es 0 o no se especificó, buscar el último Field creado
-            if (cropField.Field <= 0 && db != null)
-            {
-                var lastField = await db.Fields.OrderByDescending(f => f.Id).FirstOrDefaultAsync();
-                if (lastField != null)
-                {
-                    cropField.Field = lastField.Id; // Asignar automáticamente el último Field
-                }
-            }
-
-            await _cropFieldRepository.AddAsync(cropField);
-            await _unitOfWork.CompleteAsync();
-
-            // Vincular automáticamente con Field si el campo 'Field' contiene un Id válido (>0)
-            if (cropField.Field > 0 && db != null)
-            {
-                var fieldEntity = await db.Fields.FirstOrDefaultAsync(f => f.Id == cropField.Field);
-                if (fieldEntity != null)
-                {
-                    fieldEntity.CropId = cropField.Id; // vincular
-                    if (string.IsNullOrWhiteSpace(fieldEntity.Product)) fieldEntity.Product = cropField.Title;
-                    if (string.IsNullOrWhiteSpace(fieldEntity.Crop)) fieldEntity.Crop = cropField.Title;
-                    db.Fields.Update(fieldEntity);
-                    await db.SaveChangesAsync();
-                }
-            }
-
-            return Ok(cropField); // cambiado de CreatedAtAction para evitar warning de acción no resuelta
-        }
-
-        [HttpPut("{id:int}")]
-        public async Task<ActionResult> PutAsync(int id, [FromBody] CropField input)
-        {
-            var existing = await _cropFieldRepository.GetByIdAsync(id);
-            if (existing == null) return NotFound();
-
-            existing.Title = input.Title;
-            existing.PlantingDate = input.PlantingDate;
-            existing.HarvestDate = input.HarvestDate;
-            existing.Field = input.Field;
-            existing.Status = input.Status;
-            existing.Days = input.Days;
-
-            _cropFieldRepository.Update(existing);
-            await _unitOfWork.CompleteAsync();
-
-            return NoContent();
-        }
-
-        [HttpDelete("{id:int}")]
-        public async Task<ActionResult> DeleteAsync(int id)
-        {
-            var existing = await _cropFieldRepository.GetByIdAsync(id);
-            if (existing == null) return NotFound();
-
-            _cropFieldRepository.Delete(existing);
-            await _unitOfWork.CompleteAsync();
-
-            return NoContent();
+            return BadRequest(new { message = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Obtiene todos los CropFields
+    /// </summary>
+    /// <response code="200">Lista de CropFields</response>
+    [HttpGet]
+    public async Task<IActionResult> GetAllCropFields()
+    {
+        var cropFields = await _queryService.Handle(new GetAllCropFieldsQuery());
+        return Ok(cropFields);
+    }
+
+    /// <summary>
+    /// Obtiene un CropField por ID
+    /// </summary>
+    /// <param name="id">ID del CropField</param>
+    /// <response code="200">CropField encontrado</response>
+    /// <response code="404">CropField no encontrado</response>
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetCropFieldById(int id)
+    {
+        var cropField = await _queryService.Handle(new GetCropFieldByIdQuery(id));
+        if (cropField == null) return NotFound();
+        return Ok(cropField);
+    }
+
+    /// <summary>
+    /// Obtiene el CropField asociado a un Field (relación 1:1)
+    /// </summary>
+    /// <param name="fieldId">ID del Field</param>
+    /// <response code="200">CropField encontrado</response>
+    /// <response code="404">No existe CropField para ese Field</response>
+    [HttpGet("field/{fieldId:int}")]
+    public async Task<IActionResult> GetCropFieldByFieldId(int fieldId)
+    {
+        var cropField = await _queryService.Handle(new GetCropFieldByFieldIdQuery(fieldId));
+        if (cropField == null) return NotFound();
+        return Ok(cropField);
+    }
+
+    /// <summary>
+    /// Actualiza el status de un CropField (Healthy, Attention, Critical)
+    /// </summary>
+    /// <param name="id">ID del CropField</param>
+    /// <param name="command">Nuevo status</param>
+    /// <response code="200">Status actualizado correctamente</response>
+    /// <response code="404">CropField no encontrado</response>
+    [HttpPut("{id:int}/status")]
+    public async Task<IActionResult> UpdateCropFieldStatus(int id, [FromBody] UpdateCropFieldStatusCommand command)
+    {
+        if (id != command.CropFieldId)
+            return BadRequest(new { message = "El ID no coincide" });
+
+        var cropField = await _commandService.Handle(command);
+        if (cropField == null) return NotFound();
+        return Ok(cropField);
+    }
 }
+

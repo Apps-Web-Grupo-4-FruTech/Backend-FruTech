@@ -1,37 +1,38 @@
+using System.Text.Json.Serialization;
+
 namespace FruTech.Backend.API.CommunityRecommendation.Domain.Model.Aggregates;
 
 /// <summary>
-/// Community Recommendation aggregate root entity
+/// Recomendación de la comunidad
 /// </summary>
-public class CommunityRecommendation
+public partial class CommunityRecommendation
 {
-    public CommunityRecommendation(int id, string user, string role,
-        string description) : this()
-    {
-        Id = id;
-        User = user;
-        Role = role;
-        Description = description;
-    }
-    
-    public CommunityRecommendation()
-    {
-        User = string.Empty;
-        Role = string.Empty;
-        Description = string.Empty;
-    }
-    
     public int Id { get; set; }
-    public string User { get; private set; }
-    public string Role { get; private set; }
-    public string Description { get; private set; }
+    
+    [JsonPropertyName("user_name")]
+    public string UserName { get; set; } = string.Empty;
+    
+    [JsonPropertyName("comment_date")]
+    public DateTime CommentDate { get; set; } = DateTime.UtcNow;
+    
+    [JsonPropertyName("comment")]
+    public string Comment { get; set; } = string.Empty;
+    
+    public CommunityRecommendation() { }
+    
+    public CommunityRecommendation(string userName, string comment)
+    {
+        UserName = userName;
+        Comment = comment;
+        CommentDate = DateTime.UtcNow;
+    }
     
     /// <summary>
-    /// Update the community recommendation
+    /// Actualiza la recomendación
     /// </summary>
-    public void Update(string role, string description)
+    public void Update(string userName, string comment)
     {
-        Role = role;
-        Description = description;
+        UserName = userName;
+        Comment = comment;
     }
 }

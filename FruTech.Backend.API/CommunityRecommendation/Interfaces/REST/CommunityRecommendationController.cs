@@ -53,35 +53,6 @@ public class CommunityRecommendationController(
     }
 
     /// <summary>
-    /// Create a new Community Recommendation
-    /// </summary>
-    /// <param name="resource">
-    /// The <see cref="CreateCommunityRecommendationResource"/> create community recommendation resource
-    /// </param>
-    /// <returns>
-    /// The <see cref="CommunityRecommendationResource"/> community recommendation created, or bad request if not created
-    /// </returns>
-    [HttpPost]
-    [SwaggerOperation(
-        Summary = "Create Community Recommendation",
-        Description = "Create Community Recommendation",
-        OperationId = "CreateCommunityRecommendation")
-    ]
-    [SwaggerResponse(StatusCodes.Status201Created, "the community recommendation created",
-        typeof(CommunityRecommendationResource))]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "the community recommendation not created")]
-    public async Task<IActionResult> CreateCommunityRecommendation(
-        [FromBody] CreateCommunityRecommendationResource resource)
-    {
-        var createRecommendationCommand = CreateCommunityRecommendationCommandFromResourceAssembler.ToCommandFromResource(resource);
-        var recommendation = await communityRecommendationCommandService.Handle(createRecommendationCommand);
-        if (recommendation is null) return BadRequest();
-        var recommendationResource = CommunityRecommendationResourceFromEntityAssembler.ToResourceFromEntity(recommendation);
-        return CreatedAtAction(nameof(GetCommunityRecommendationById),
-            new { recommendationId = recommendation.Id }, recommendationResource);
-    }
-
-    /// <summary>
     ///     Get all Community Recommendations
     /// </summary>
     /// <returns>
@@ -101,5 +72,34 @@ public class CommunityRecommendationController(
             .Select(CommunityRecommendationResourceFromEntityAssembler.ToResourceFromEntity)
             .ToList();
         return Ok(recommendationResources);
+    }
+    
+    /// <summary>
+    /// Update an existing Community Recommendation
+    /// </summary>
+    /// <param name="id">
+    /// The Community Recommendation id
+    /// </param>
+    /// <param name="resource">
+    /// The <see cref="UpdateCommunityRecommendationResource"/> update community recommendation resource
+    /// </param>
+    /// <returns>
+    /// The <see cref="CommunityRecommendationResource"/> community recommendation updated, or not found if not updated
+    /// </returns>
+    [HttpPut("{id:int}")]
+    [SwaggerOperation(
+        Summary = "Update Community Recommendation",
+        Description = "Update Community Recommendation",
+        OperationId = "UpdateCommunityRecommendation")]
+    [SwaggerResponse(StatusCodes.Status200OK, "the updated community recommendation",
+        typeof(CommunityRecommendationResource))]
+    [SwaggerResponse(StatusCodes.Status404NotFound, "the community recommendation not found")]
+    public async Task<IActionResult> UpdateCommunityRecommendation(int id, [FromBody] UpdateCommunityRecommendationResource resource)
+    {
+        var command = new FruTech.Backend.API.CommunityRecommendation.Domain.Model.Commands.UpdateCommunityRecommendationCommand(id, resource.UserName, resource.Comment);
+        var updated = await communityRecommendationCommandService.Handle(command);
+        if (updated is null) return NotFound();
+        var updatedResource = CommunityRecommendationResourceFromEntityAssembler.ToResourceFromEntity(updated);
+        return Ok(updatedResource);
     }
 }

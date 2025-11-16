@@ -1,140 +1,73 @@
-// csharp
 using Microsoft.AspNetCore.Mvc;
-using FruTech.Backend.API.Fields.Domain.Model.Entities;
-using FruTech.Backend.API.Fields.Domain.Model.Repositories;
-using FruTech.Backend.API.CropFields.Domain.Model.Repositories;
-using FruTech.Backend.API.Shared.Domain.Repositories;
-using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
-using Microsoft.EntityFrameworkCore;
+using FruTech.Backend.API.Fields.Domain.Model.Commands;
+using FruTech.Backend.API.Fields.Domain.Model.Queries;
+using FruTech.Backend.API.Fields.Domain.Services;
 
-namespace FruTech.Backend.API.Fields.Interfaces.REST
+namespace FruTech.Backend.API.Fields.Interfaces.REST;
+
+/// <summary>
+/// Controlador para la gestión de campos agrícolas (Fields)
+/// </summary>
+[ApiController]
+[Route("api/v1/[controller]")]
+public class FieldsController : ControllerBase
 {
-    [ApiController]
-    [Route("api/v1/fields")]
-    public class FieldsController : ControllerBase
+    private readonly IFieldCommandService _fieldCommandService;
+    private readonly IFieldQueryService _fieldQueryService;
+
+    public FieldsController(
+        IFieldCommandService fieldCommandService,
+        IFieldQueryService fieldQueryService)
     {
-        private readonly IFieldRepository _fieldRepo;
-        private readonly ICropFieldRepository _cropRepo;
-        private readonly IUnitOfWork _unitOfWork;
-        private readonly AppDbContext _context;
+        _fieldCommandService = fieldCommandService;
+        _fieldQueryService = fieldQueryService;
+    }
 
-        public FieldsController(IFieldRepository fieldRepo, ICropFieldRepository cropRepo, IUnitOfWork unitOfWork, AppDbContext context)
+    /// <summary>
+    /// Crea un nuevo campo y su ProgressHistory asociado automáticamente
+    /// </summary>
+    /// <param name="command">Datos del comando CreateField (UserId, ImageUrl, Name, Location, FieldSize)</param>
+    /// <response code="201">Campo creado correctamente</response>
+    /// <response code="400">Datos inválidos</response>
+    [HttpPost]
+    public async Task<IActionResult> CreateField(
+        [FromBody] CreateFieldCommand command)
+    {
+        try
         {
-            _fieldRepo = fieldRepo;
-            _cropRepo = cropRepo;
-            _unitOfWork = unitOfWork;
-            _context = context;
+            var field = await _fieldCommandService.Handle(command);
+            return CreatedAtAction(nameof(GetFieldById), new { id = field.Id }, field);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        catch (Exception ex)
         {
-            var items = await _context.Fields
-                .AsNoTracking()
-                .ToListAsync();
-            return Ok(items);
-        }
-
-        [HttpGet("{id:int}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var item = await _context.Fields
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.Id == id);
-            if (item == null) return NotFound();
-            return Ok(item);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Field field)
-        {
-            // Considerar 0 como no enviado
-            if (field.CropId.HasValue && field.CropId.Value <= 0)
-                field.CropId = null;
-            if (field.ProgressId.HasValue && field.ProgressId.Value <= 0)
-                field.ProgressId = null;
-
-            if (field.CropId.HasValue && field.CropId.Value > 0)
-            {
-                var crop = await _cropRepo.GetByIdAsync(field.CropId.Value);
-                if (crop != null)
-                {
-                    if (string.IsNullOrWhiteSpace(field.Name)) field.Name = crop.Title;
-                    field.Product = string.IsNullOrWhiteSpace(field.Product) ? crop.Title : field.Product;
-                    field.Crop = string.IsNullOrWhiteSpace(field.Crop) ? crop.Title : field.Crop;
-                }
-                // Si el CropId es inválido, ignorar la vinculación (no lanzar error)
-            }
-
-            if (field.ProgressId.HasValue && field.ProgressId.Value > 0)
-            {
-                var progress = await _context.ProgressHistory.AsNoTracking().FirstOrDefaultAsync(p => p.Id == field.ProgressId.Value);
-                if (progress == null)
-                {
-                    // Ignorar si no existe
-                    field.ProgressId = null;
-                }
-            }
-
-            await _fieldRepo.AddAsync(field);
-            await _unitOfWork.CompleteAsync();
-            return CreatedAtAction(nameof(GetById), new { id = field.Id }, field);
-        }
-
-        [HttpPatch("{id:int}")]
-        public async Task<IActionResult> Patch(int id, [FromBody] Field patch)
-        {
-            var existing = await _context.Fields.FirstOrDefaultAsync(f => f.Id == id);
-            if (existing == null) return NotFound();
-
-            // Actualizaciones básicas
-            if (!string.IsNullOrWhiteSpace(patch.ImageUrl)) existing.ImageUrl = patch.ImageUrl;
-            if (!string.IsNullOrWhiteSpace(patch.Name)) existing.Name = patch.Name;
-            if (!string.IsNullOrWhiteSpace(patch.Location)) existing.Location = patch.Location;
-            if (!string.IsNullOrWhiteSpace(patch.FieldSize)) existing.FieldSize = patch.FieldSize;
-            if (!string.IsNullOrWhiteSpace(patch.Product)) existing.Product = patch.Product;
-            if (!string.IsNullOrWhiteSpace(patch.Crop)) existing.Crop = patch.Crop;
-
-            // Tratar 0 como null
-            if (patch.CropId.HasValue && patch.CropId.Value <= 0)
-                patch.CropId = null;
-            if (patch.ProgressId.HasValue && patch.ProgressId.Value <= 0)
-                patch.ProgressId = null;
-
-            if (patch.CropId.HasValue && patch.CropId != existing.CropId && patch.CropId.Value > 0)
-            {
-                var crop = await _cropRepo.GetByIdAsync(patch.CropId.Value);
-                if (crop != null)
-                {
-                    existing.CropId = crop.Id;
-                    if (string.IsNullOrWhiteSpace(existing.Name)) existing.Name = crop.Title;
-                    if (string.IsNullOrWhiteSpace(patch.Product)) existing.Product = crop.Title;
-                    if (string.IsNullOrWhiteSpace(patch.Crop)) existing.Crop = crop.Title;
-                }
-                // Ignorar si no existe
-            }
-
-            if (patch.ProgressId.HasValue && patch.ProgressId != existing.ProgressId && patch.ProgressId.Value > 0)
-            {
-                var progress = await _context.ProgressHistory.AsNoTracking().FirstOrDefaultAsync(p => p.Id == patch.ProgressId.Value);
-                if (progress != null)
-                {
-                    existing.ProgressId = progress.Id;
-                }
-                // Ignorar si no existe
-            }
-
-            if (patch.TaskIds.Count > 0)
-            {
-                foreach (var taskId in patch.TaskIds)
-                {
-                    if (taskId > 0 && !existing.TaskIds.Contains(taskId)) existing.TaskIds.Add(taskId);
-                }
-            }
-
-            _fieldRepo.Update(existing);
-            await _unitOfWork.CompleteAsync();
-            return NoContent();
+            return BadRequest(new { message = ex.Message });
         }
     }
+
+    /// <summary>
+    /// Obtiene todos los campos de un usuario
+    /// </summary>
+    /// <param name="userId">ID del usuario</param>
+    /// <response code="200">Lista de campos del usuario</response>
+    [HttpGet("user/{userId:int}")]
+    public async Task<IActionResult> GetFieldsByUserId(int userId)
+    {
+        var fields = await _fieldQueryService.Handle(new GetFieldsByUserIdQuery(userId));
+        return Ok(fields);
+    }
+
+    /// <summary>
+    /// Obtiene un campo por ID
+    /// </summary>
+    /// <param name="id">ID del campo</param>
+    /// <response code="200">Campo encontrado</response>
+    /// <response code="404">Campo no encontrado</response>
+    [HttpGet("{id:int}")]
+    public async Task<IActionResult> GetFieldById(int id)
+    {
+        var field = await _fieldQueryService.Handle(new GetFieldByIdQuery(id));
+        if (field == null) return NotFound();
+        return Ok(field);
+    }
 }
+

@@ -1,11 +1,11 @@
 using FruTech.Backend.API.CropFields.Domain.Model.Entities;
+using FruTech.Backend.API.CropFields.Domain.Model.ValueObjects;
 using FruTech.Backend.API.Fields.Domain.Model.Entities;
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using FruTech.Backend.API.Tasks.Infrastructure.Persistence.EFC.Configuration.Extensions;
 using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using UserAggregate = FruTech.Backend.API.User.Domain.Model.Aggregates.User;
-using UpcomingTaskAggregate = FruTech.Backend.API.UpcomingTasks.Domain.Model.Aggregates.UpcomingTask;
 using CommunityRecommendationAggregate = FruTech.Backend.API.CommunityRecommendation.Domain.Model.Aggregates.CommunityRecommendation;
 
 namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration
@@ -14,12 +14,10 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
     {
         // DbSets
         public DbSet<UserAggregate> Users { get; set; }
-        public DbSet<UpcomingTaskAggregate> UpcomingTasks { get; set; }
         public DbSet<CommunityRecommendationAggregate> CommunityRecommendations { get; set; }
         public DbSet<CropField> CropFields { get; set; }
         public DbSet<Field> Fields { get; set; }
-        public DbSet<ProgressHistory> ProgressHistory { get; set; }
-        public DbSet<FieldTask> FieldTasks { get; set; }
+        public DbSet<ProgressHistory> ProgressHistories { get; set; }
         public DbSet<Tasks.Domain.Model.Aggregate.Task> Tasks { get; set; }
 
         public AppDbContext(DbContextOptions options) : base(options)
@@ -28,7 +26,7 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
 
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
-            //builder.AddCreatedUpdatedInterceptor();
+            builder.AddCreatedUpdatedInterceptor();
             base.OnConfiguring(builder);
         }
 
@@ -36,42 +34,99 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
         {
             base.OnModelCreating(builder);
 
-            // Task Context
-            builder.ApplyTaskConfiguration();
+            // ========== USER ==========
+            builder.Entity<UserAggregate>().ToTable("users");
+            builder.Entity<UserAggregate>().HasKey(u => u.Id);
+            builder.Entity<UserAggregate>().Property(u => u.Id).ValueGeneratedOnAdd();
+            builder.Entity<UserAggregate>().Property(u => u.UserName).IsRequired().HasMaxLength(100);
+            builder.Entity<UserAggregate>().Property(u => u.Email).IsRequired().HasMaxLength(200);
+            builder.Entity<UserAggregate>().Property(u => u.PhoneNumber).HasMaxLength(20);
+            builder.Entity<UserAggregate>().Property(u => u.Identificator).IsRequired().HasMaxLength(50);
+            builder.Entity<UserAggregate>().Property(u => u.PasswordHash).IsRequired();
+            builder.Entity<UserAggregate>().HasIndex(u => u.Email).IsUnique();
+            builder.Entity<UserAggregate>().HasIndex(u => u.Identificator).IsUnique();
 
-            // Configuración CropField
-            builder.Entity<CropField>().ToTable("CropFields");
-            builder.Entity<CropField>().HasKey(p => p.Id);
-            builder.Entity<CropField>().Property(p => p.Id).ValueGeneratedOnAdd();
-            builder.Entity<CropField>().Property(p => p.Title).IsRequired().HasMaxLength(200);
-            builder.Entity<CropField>().Property(p => p.Field).IsRequired();
-            builder.Entity<CropField>().Property(p => p.Status).IsRequired().HasMaxLength(100);
-            builder.Entity<CropField>().Property(p => p.SoilType).HasMaxLength(100);
-            builder.Entity<CropField>().Property(p => p.Watering).HasMaxLength(200);
-            builder.Entity<CropField>().Property(p => p.Sunlight).HasMaxLength(100);
-
-            // Configuración Field
-            builder.Entity<Field>().ToTable("Fields");
+            // ========== FIELD (con UserId FK) ==========
+            builder.Entity<Field>().ToTable("fields");
             builder.Entity<Field>().HasKey(f => f.Id);
             builder.Entity<Field>().Property(f => f.Id).ValueGeneratedOnAdd();
+            builder.Entity<Field>().Property(f => f.UserId).IsRequired();
             builder.Entity<Field>().Property(f => f.Name).IsRequired().HasMaxLength(200);
             builder.Entity<Field>().Property(f => f.Location).HasMaxLength(300);
             builder.Entity<Field>().Property(f => f.ImageUrl).HasMaxLength(500);
             builder.Entity<Field>().Property(f => f.FieldSize).HasMaxLength(50);
-            builder.Entity<Field>().Property(f => f.Product).HasMaxLength(150);
-            builder.Entity<Field>().Property(f => f.Crop).HasMaxLength(150);
+            
+            // Relación User 1:N Fields
+            builder.Entity<Field>()
+                .HasOne<UserAggregate>()
+                .WithMany()
+                .HasForeignKey(f => f.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // Configuración ProgressHistory
-            builder.Entity<ProgressHistory>().ToTable("ProgressHistory");
+            // ========== CROPFIELD (1:1 con Field) ==========
+            builder.Entity<CropField>().ToTable("crop_fields");
+            builder.Entity<CropField>().HasKey(c => c.Id);
+            builder.Entity<CropField>().Property(c => c.Id).ValueGeneratedOnAdd();
+            builder.Entity<CropField>().Property(c => c.FieldId).IsRequired();
+            builder.Entity<CropField>().Property(c => c.Crop).IsRequired().HasMaxLength(200);
+            builder.Entity<CropField>().Property(c => c.SoilType).HasMaxLength(100);
+            builder.Entity<CropField>().Property(c => c.Watering).HasMaxLength(200);
+            builder.Entity<CropField>().Property(c => c.Sunlight).HasMaxLength(100);
+            
+            // Mapear enum Status como string
+            builder.Entity<CropField>()
+                .Property(c => c.Status)
+                .HasConversion<string>()
+                .IsRequired()
+                .HasMaxLength(50);
+            
+            // Relación Field 1:1 CropField usando navegación Field.CropField
+            builder.Entity<Field>()
+                .HasOne(f => f.CropField)
+                .WithOne()
+                .HasForeignKey<CropField>(c => c.FieldId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.Entity<CropField>().HasIndex(c => c.FieldId).IsUnique();
+
+            // ========== PROGRESSHISTORY (1:1 con Field) ==========
+            builder.Entity<ProgressHistory>().ToTable("progress_histories");
             builder.Entity<ProgressHistory>().HasKey(p => p.Id);
             builder.Entity<ProgressHistory>().Property(p => p.Id).ValueGeneratedOnAdd();
+            builder.Entity<ProgressHistory>().Property(p => p.FieldId).IsRequired();
+            builder.Entity<ProgressHistory>().Property(p => p.Watered).IsRequired();
+            builder.Entity<ProgressHistory>().Property(p => p.Fertilized).IsRequired();
+            builder.Entity<ProgressHistory>().Property(p => p.Pests).IsRequired();
+            
+            builder.Entity<Field>()
+                .HasOne(f => f.ProgressHistory)
+                .WithOne()
+                .HasForeignKey<ProgressHistory>(p => p.FieldId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            builder.Entity<ProgressHistory>().HasIndex(p => p.FieldId).IsUnique();
 
-            // Configuración FieldTask
-            builder.Entity<FieldTask>().ToTable("FieldTasks");
-            builder.Entity<FieldTask>().HasKey(t => t.Id);
-            builder.Entity<FieldTask>().Property(t => t.Id).ValueGeneratedOnAdd();
-            builder.Entity<FieldTask>().Property(t => t.Name).HasMaxLength(200);
-            builder.Entity<FieldTask>().Property(t => t.TaskDescription).HasMaxLength(500);
+            // ========== TASK (N:1 con Field) ==========
+            builder.Entity<Tasks.Domain.Model.Aggregate.Task>().ToTable("tasks");
+            builder.Entity<Tasks.Domain.Model.Aggregate.Task>().HasKey(t => t.Id);
+            builder.Entity<Tasks.Domain.Model.Aggregate.Task>().Property(t => t.Id).ValueGeneratedOnAdd();
+            builder.Entity<Tasks.Domain.Model.Aggregate.Task>().Property(t => t.FieldId).IsRequired();
+            builder.Entity<Tasks.Domain.Model.Aggregate.Task>().Property(t => t.Description).IsRequired().HasMaxLength(500);
+            builder.Entity<Tasks.Domain.Model.Aggregate.Task>().Property(t => t.DueDate).IsRequired();
+            
+            builder.Entity<Field>()
+                .HasMany(f => f.Tasks!)
+                .WithOne()
+                .HasForeignKey(t => t.FieldId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // ========== COMMUNITYRECOMMENDATION ==========
+            builder.Entity<CommunityRecommendationAggregate>().ToTable("community_recommendations");
+            builder.Entity<CommunityRecommendationAggregate>().HasKey(c => c.Id);
+            builder.Entity<CommunityRecommendationAggregate>().Property(c => c.Id).ValueGeneratedOnAdd();
+            builder.Entity<CommunityRecommendationAggregate>().Property(c => c.UserName).IsRequired().HasMaxLength(100);
+            builder.Entity<CommunityRecommendationAggregate>().Property(c => c.Comment).IsRequired().HasMaxLength(2000);
+            builder.Entity<CommunityRecommendationAggregate>().Property(c => c.CommentDate).IsRequired();
         }
     }
 }

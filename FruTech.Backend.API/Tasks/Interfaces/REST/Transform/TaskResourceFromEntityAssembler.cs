@@ -7,11 +7,10 @@ public static class TaskResourceFromEntityAssembler
     public static TaskResource ToResourceFromEntity(Domain.Model.Aggregate.Task entity)
     {
         return new TaskResource(
-            entity.id,
-            entity.description,
-            entity.due_date,
-            entity.field
+            entity.Id,
+            entity.FieldId,
+            entity.Description,
+            entity.DueDate
         );
     }
 }
-

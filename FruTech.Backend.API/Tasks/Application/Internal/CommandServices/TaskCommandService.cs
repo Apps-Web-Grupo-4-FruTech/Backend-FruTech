@@ -16,9 +16,9 @@ public class TaskCommandService : ITaskCommandService
     public async Task<Domain.Model.Aggregate.Task> Handle(CreateTaskCommand command)
     {
         var task = new Domain.Model.Aggregate.Task(
-            command.description,
-            command.due_date,
-            command.field
+            command.Description,
+            command.DueDate,
+            command.FieldId
         );
 
         return await _taskRepository.CreateAsync(task);
@@ -28,18 +28,17 @@ public class TaskCommandService : ITaskCommandService
     {
         var task = new Domain.Model.Aggregate.Task
         {
-            id = command.id,
-            description = command.description,
-            due_date = command.due_date,
-            field = command.field
+            Id = command.Id,
+            Description = command.Description,
+            DueDate = command.DueDate,
+            FieldId = command.FieldId
         };
 
-        return await _taskRepository.UpdateAsync(command.id, task);
+        return await _taskRepository.UpdateAsync(command.Id, task);
     }
 
     public async Task<bool> Handle(DeleteTaskCommand command)
     {
-        return await _taskRepository.DeleteAsync(command.id);
+        return await _taskRepository.DeleteAsync(command.Id);
     }
 }
-

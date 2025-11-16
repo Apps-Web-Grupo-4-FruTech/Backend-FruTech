@@ -1,6 +1,6 @@
 namespace FruTech.Backend.API.CommunityRecommendation.Domain.Model.Commands;
 
 /// <summary>
-/// Command to create a new community recommendation
+/// Comando para crear una nueva recomendación de la comunidad
 /// </summary>
-public record CreateCommunityRecommendationCommand(int id,  string user, string role, string description);
+public record CreateCommunityRecommendationCommand(string UserName, string Comment);

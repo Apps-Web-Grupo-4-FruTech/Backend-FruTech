@@ -1,24 +1,23 @@
-using System;
 using System.Text.Json.Serialization;
 
 namespace FruTech.Backend.API.Fields.Domain.Model.Entities
 {
-    public class ProgressHistory
+    public partial class ProgressHistory
     {
         public int Id { get; set; }
+        
+        /// <summary>
+        /// ID del campo (relación 1:1)
+        /// </summary>
         public int FieldId { get; set; }
 
-        // Convertidos a DateTime? para poder calcular fácilmente
         [JsonPropertyName("watered")]
-        public DateTime? Watered { get; set; }
+        public DateTime Watered { get; set; } = DateTime.UtcNow;
 
         [JsonPropertyName("fertilized")]
-        public DateTime? Fertilized { get; set; }
+        public DateTime Fertilized { get; set; } = DateTime.UtcNow;
 
         [JsonPropertyName("pests")]
-        public DateTime? Pests { get; set; }
-
-        // Se elimina la propiedad de navegación `Field` para que la relación sea por FieldId
-        // public Field Field { get; set; } = null!;
+        public DateTime Pests { get; set; } = DateTime.UtcNow;
     }
 }

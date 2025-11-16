@@ -25,7 +25,6 @@ public class TaskQueryService : ITaskQueryService
 
     public async Task<IEnumerable<Domain.Model.Aggregate.Task>> Handle(GetTasksByFieldQuery query)
     {
-        return await _taskRepository.GetByFieldAsync(query.field);
+        return await _taskRepository.GetByFieldIdAsync(query.fieldId);
     }
 }
-

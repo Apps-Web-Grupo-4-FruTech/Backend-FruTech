@@ -1,4 +1,6 @@
 namespace FruTech.Backend.API.Tasks.Domain.Model.Commands;
 
-public record CreateTaskCommand(string description, string due_date, string field);
-
+/// <summary>
+/// Comando para crear una tarea asociada a un Field
+/// </summary>
+public record CreateTaskCommand(int FieldId, string Description, DateTime DueDate);

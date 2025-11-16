@@ -1,6 +1,5 @@
 using Cortex.Mediator;
 using FruTech.Backend.API.CommunityRecommendation.Domain.Model.Commands;
-using FruTech.Backend.API.CommunityRecommendation.Domain.Model.Events;
 using FruTech.Backend.API.CommunityRecommendation.Domain.Repositories;
 using FruTech.Backend.API.Shared.Domain.Repositories;
 using FruTech.Backend.API.CommunityRecommendation.Domain.Services;
@@ -13,38 +12,15 @@ namespace FruTech.Backend.API.CommunityRecommendation.Application.Internal.Comma
 /// </summary>
 public class CommunityRecommendationCommandService(
     ICommunityRecommendationRepository communityRecommendationRepository,
-    IUnitOfWork unitOfWork,
-    IMediator domainEventPublisher) : ICommunityRecommendationCommandService
+    IUnitOfWork unitOfWork) : ICommunityRecommendationCommandService
 {
-    public async Task<CommunityRecommendationAggregate?> Handle(CreateCommunityRecommendationCommand command)
-    {
-        var communityRecommendation = new CommunityRecommendationAggregate(
-            command.id,
-            command.user,
-            command.role,
-            command.description);
-
-        await communityRecommendationRepository.AddAsync(communityRecommendation);
-        await unitOfWork.CompleteAsync();
-
-        // Publish domain event (pass all required parameters)
-        await domainEventPublisher.PublishAsync(new CommunityRecommendationCreatedEvent(
-            communityRecommendation.Id,
-            communityRecommendation.User,
-            communityRecommendation.Role,
-            communityRecommendation.Description));
-
-        return communityRecommendation;
-    }
-
     public async Task<CommunityRecommendationAggregate?> Handle(UpdateCommunityRecommendationCommand command)
     {
-        var communityRecommendation = await communityRecommendationRepository.FindByIdAsync(command.id);
+        var communityRecommendation = await communityRecommendationRepository.FindByIdAsync(command.Id);
         if (communityRecommendation == null) return null;
 
         // Update the community recommendation
-        communityRecommendation.Update(command.role, command.description);
-        
+        communityRecommendation.Update(command.UserName, command.Comment);
         await unitOfWork.CompleteAsync();
 
         return communityRecommendation;

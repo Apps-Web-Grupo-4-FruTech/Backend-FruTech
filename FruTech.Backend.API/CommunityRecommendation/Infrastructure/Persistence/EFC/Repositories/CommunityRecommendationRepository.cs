@@ -9,4 +9,6 @@ namespace FruTech.Backend.API.CommunityRecommendation.Infrastructure.Persistence
 /// <param name ="context"></param>
 public class CommunityRecommendationRepository(AppDbContext context) 
     : BaseRepository<Domain.Model.Aggregates.CommunityRecommendation>(context),
-        Domain.Repositories.ICommunityRecommendationRepository;
+        Domain.Repositories.ICommunityRecommendationRepository
+{
+}

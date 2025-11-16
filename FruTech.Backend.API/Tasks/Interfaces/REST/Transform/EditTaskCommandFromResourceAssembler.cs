@@ -9,10 +9,9 @@ public static class EditTaskCommandFromResourceAssembler
     {
         return new EditTaskCommand(
             id,
-            resource.description,
-            resource.due_date,
-            resource.field
+            resource.FieldId,
+            resource.Description,
+            resource.DueDate
         );
     }
 }
-

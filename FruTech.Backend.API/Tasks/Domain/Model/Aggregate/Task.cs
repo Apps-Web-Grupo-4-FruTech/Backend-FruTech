@@ -1,20 +1,30 @@
+using System.Text.Json.Serialization;
+
 namespace FruTech.Backend.API.Tasks.Domain.Model.Aggregate;
-public class Task
+
+public partial class Task
 {
-    public int id { get; set; }
-    public string description { get; set; }
-    public string due_date { get; set; }
-    public string field { get; set; }
-    public Task()
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+    
+    /// <summary>
+    /// ID del campo asociado a esta tarea
+    /// </summary>
+    [JsonPropertyName("field_id")]
+    public int FieldId { get; set; }
+    
+    [JsonPropertyName("description")]
+    public string Description { get; set; } = string.Empty;
+    
+    [JsonPropertyName("due_date")]
+    public DateTime DueDate { get; set; } = DateTime.UtcNow.Date;
+    
+    public Task() { }
+    
+    public Task(string description, DateTime dueDate, int fieldId)
     {
-        description = string.Empty;
-        due_date = string.Empty;
-        field = string.Empty;
-    }
-    public Task(string description, string dueDate, string field)
-    {
-        this.description = description;
-        this.due_date = dueDate;
-        this.field = field;
+        Description = description;
+        DueDate = dueDate;
+        FieldId = fieldId;
     }
 }

@@ -1,4 +1,7 @@
 namespace FruTech.Backend.API.Tasks.Domain.Model.Commands;
 
-public record DeleteTaskCommand(int id);
+/// <summary>
+/// Comando para eliminar una tarea por ID
+/// </summary>
+public record DeleteTaskCommand(int Id);
 

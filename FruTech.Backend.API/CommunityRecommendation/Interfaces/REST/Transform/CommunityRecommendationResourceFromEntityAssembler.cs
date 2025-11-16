@@ -20,8 +20,8 @@ public static class CommunityRecommendationResourceFromEntityAssembler
     {
         return new CommunityRecommendationResource(
             entity.Id,
-            entity.User,
-            entity.Role,
-            entity.Description);
+            entity.UserName,
+            entity.CommentDate,
+            entity.Comment);
     }
 }

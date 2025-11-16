@@ -14,8 +14,8 @@ public class CommunityRecommendationConfiguration : IEntityTypeConfiguration<Com
         builder.ToTable("community_recommendations");
         builder.HasKey(c => c.Id);
         builder.Property(c => c.Id).IsRequired().ValueGeneratedOnAdd();
-        builder.Property(c => c.User).IsRequired().HasMaxLength(100);
-        builder.Property(c => c.Role).IsRequired().HasMaxLength(50);
-        builder.Property(c => c.Description).IsRequired().HasMaxLength(500);
+        builder.Property(c => c.UserName).IsRequired().HasMaxLength(100).HasColumnName("user_name");
+        builder.Property(c => c.CommentDate).IsRequired().HasColumnName("comment_date");
+        builder.Property(c => c.Comment).IsRequired().HasMaxLength(1000).HasColumnName("comment");
     }
 }

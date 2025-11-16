@@ -7,6 +7,5 @@ using Model.Commands;
 /// </summary>
 public interface ICommunityRecommendationCommandService
 {
-    Task<Model.Aggregates.CommunityRecommendation?> Handle(CreateCommunityRecommendationCommand command);
     Task<Model.Aggregates.CommunityRecommendation?> Handle(UpdateCommunityRecommendationCommand command);
 }

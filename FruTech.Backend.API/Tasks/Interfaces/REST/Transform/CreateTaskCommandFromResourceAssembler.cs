@@ -8,10 +8,9 @@ public static class CreateTaskCommandFromResourceAssembler
     public static CreateTaskCommand ToCommandFromResource(CreateTaskResource resource)
     {
         return new CreateTaskCommand(
-            resource.description,
-            resource.due_date,
-            resource.field
+            resource.FieldId,
+            resource.Description,
+            resource.DueDate
         );
     }
 }
-

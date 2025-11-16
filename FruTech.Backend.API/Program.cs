@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
 using FruTech.Backend.API.Shared.Domain.Repositories;
@@ -8,11 +10,6 @@ using FruTech.Backend.API.User.Infrastructure.Persistence.EFC.Repositories;
 using FruTech.Backend.API.User.Domain.Services;
 using FruTech.Backend.API.User.Application.Internal.CommandServices;
 using FruTech.Backend.API.User.Application.Internal.QueryServices;
-using FruTech.Backend.API.UpcomingTasks.Domain.Repositories;
-using FruTech.Backend.API.UpcomingTasks.Infrastructure.Persistence.EFC.Repositories;
-using FruTech.Backend.API.UpcomingTasks.Domain.Services;
-using FruTech.Backend.API.UpcomingTasks.Application.Internal.CommandServices;
-using FruTech.Backend.API.UpcomingTasks.Application.Internal.QueryServices;
 using FruTech.Backend.API.CropFields.Domain.Model.Repositories;
 using FruTech.Backend.API.CropFields.Infrastructure.Persistence.EFC.Repositories;
 using FruTech.Backend.API.Fields.Domain.Model.Repositories;
@@ -27,9 +24,18 @@ using FruTech.Backend.API.Tasks.Application.Internal.QueryServices;
 using FruTech.Backend.API.Tasks.Domain.Repositories;
 using FruTech.Backend.API.Tasks.Domain.Services;
 using FruTech.Backend.API.Tasks.Infrastructure.Persistence.EFC.Repositories;
+using FruTech.Backend.API.Fields.Domain.Services;
+using FruTech.Backend.API.Fields.Application.Internal.CommandServices;
+using FruTech.Backend.API.Fields.Application.Internal.QueryServices;
+using FruTech.Backend.API.CropFields.Domain.Services;
+using FruTech.Backend.API.CropFields.Application.Internal.CommandServices;
+using FruTech.Backend.API.CropFields.Application.Internal.QueryServices;
 using Cortex.Mediator;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Forzar que Kestrel escuche en http://localhost:5073 para evitar conflictos con el puerto 5000
+builder.WebHost.UseUrls("http://localhost:5073");
 
 // CORS Configuration
 const string FrontendCorsPolicy = "FrontendCorsPolicy";
@@ -61,22 +67,23 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 // Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IUpcomingTaskRepository, UpcomingTaskRepository>();
-builder.Services.AddScoped<ICropFieldRepository, CropFieldRepository>();
 builder.Services.AddScoped<IFieldRepository, FieldRepository>();
 builder.Services.AddScoped<IProgressHistoryRepository, ProgressHistoryRepository>();
-builder.Services.AddScoped<ICommunityRecommendationRepository, CommunityRecommendationRepository>();
+builder.Services.AddScoped<ICropFieldRepository, CropFieldRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ICommunityRecommendationRepository, CommunityRecommendationRepository>();
 
-// Services
+// Services (Command & Query)
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 builder.Services.AddScoped<IUserQueryService, UserQueryService>();
-builder.Services.AddScoped<IUpcomingTaskCommandService, UpcomingTaskCommandService>();
-builder.Services.AddScoped<IUpcomingTaskQueryService, UpcomingTaskQueryService>();
-builder.Services.AddScoped<ICommunityRecommendationCommandService, CommunityRecommendationCommandService>();
-builder.Services.AddScoped<ICommunityRecommendationQueryService, CommunityRecommendationQueryService>();
+builder.Services.AddScoped<IFieldCommandService, FieldCommandService>();
+builder.Services.AddScoped<IFieldQueryService, FieldQueryService>();
+builder.Services.AddScoped<ICropFieldCommandService, CropFieldCommandService>();
+builder.Services.AddScoped<ICropFieldQueryService, CropFieldQueryService>();
 builder.Services.AddScoped<ITaskCommandService, TaskCommandService>();
 builder.Services.AddScoped<ITaskQueryService, TaskQueryService>();
+builder.Services.AddScoped<ICommunityRecommendationCommandService, CommunityRecommendationCommandService>();
+builder.Services.AddScoped<ICommunityRecommendationQueryService, CommunityRecommendationQueryService>();
 
 // Mediator
 builder.Services.AddScoped<IMediator, Mediator>();
@@ -89,21 +96,32 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new() { Title = "FruTech API", Version = "v1" });
+
+    var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFilename);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
+});
 
 var app = builder.Build();
 
-// Create database automatically
+// Crear/migrar la base de datos automáticamente usando migraciones
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     try
     {
-        dbContext.Database.EnsureCreated();
+        dbContext.Database.Migrate();
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"Error al crear la base de datos: {ex.Message}");
+        Console.WriteLine($"Error al migrar la base de datos: {ex.Message}");
     }
 }
 
