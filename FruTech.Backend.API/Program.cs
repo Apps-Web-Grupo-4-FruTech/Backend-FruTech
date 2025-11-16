@@ -35,7 +35,7 @@ using Cortex.Mediator;
 var builder = WebApplication.CreateBuilder(args);
 
 // Forzar que Kestrel escuche en http://localhost:5073 para evitar conflictos con el puerto 5000
-builder.WebHost.UseUrls("http://localhost:5073");
+//builder.WebHost.UseUrls("http://localhost:5073");
 
 // CORS Configuration
 const string FrontendCorsPolicy = "FrontendCorsPolicy";
