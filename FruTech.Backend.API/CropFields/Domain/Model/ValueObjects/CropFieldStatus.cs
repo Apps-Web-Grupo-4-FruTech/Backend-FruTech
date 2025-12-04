@@ -1,7 +1,7 @@
 ﻿namespace FruTech.Backend.API.CropFields.Domain.Model.ValueObjects;
 
 /// <summary>
-/// Estado del cultivo en el campo
+/// Crop Status Enum
 /// </summary>
 public enum CropFieldStatus
 {

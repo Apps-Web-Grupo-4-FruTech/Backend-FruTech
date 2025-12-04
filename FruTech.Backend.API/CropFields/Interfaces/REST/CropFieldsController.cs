@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using FruTech.Backend.API.CropFields.Domain.Model.Commands;
 using FruTech.Backend.API.CropFields.Domain.Model.Queries;
 using FruTech.Backend.API.CropFields.Domain.Services;
+using FruTech.Backend.API.CropFields.Interfaces.REST.Transform;
+using FruTech.Backend.API.CropFields.Interfaces.REST.Resources;
 
 namespace FruTech.Backend.API.CropFields.Interfaces.REST;
 
@@ -54,8 +56,9 @@ public class CropFieldsController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllCropFields()
     {
-        var cropFields = await _queryService.Handle(new GetAllCropFieldsQuery());
-        return Ok(cropFields);
+        var entities = await _queryService.Handle(new GetAllCropFieldsQuery());
+        var resources = entities.Select(CropFieldResourceFromEntityAssembler.ToResource);
+        return Ok(resources);
     }
 
     /// <summary>
@@ -87,22 +90,45 @@ public class CropFieldsController : ControllerBase
     }
 
     /// <summary>
-    /// Updates the crop attribute of a CropField
+    /// Gets all CropFields associated with a specific user
+    /// </summary>
+    /// <param name="userId">User ID</param>
+    /// <response code="200">List of CropFields for the user</response>
+    [HttpGet("user/{userId:int}")]
+    public async Task<IActionResult> GetCropFieldsByUserId(int userId)
+    {
+        var cropFields = await _queryService.Handle(new GetCropFieldsByUserIdQuery(userId));
+        var resources = cropFields.Select(CropFieldResourceFromEntityAssembler.ToResource);
+        return Ok(resources);
+    }
+
+    /// <summary>
+    /// Updates attributes of a CropField (supports partial updates): Crop, PlantingDate, HarvestDate, Status. IDs and audit fields cannot be modified.
     /// </summary>
     /// <param name="id">CropField ID</param>
-    /// <param name="command">New crop value</param>
-    /// <response code="200">Crop updated successfully</response>
+    /// <param name="command">CropField update command (partial values allowed)</param>
+    /// <response code="200">CropField updated successfully</response>
     /// <response code="404">CropField not found</response>
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateCropField(int id, [FromBody] UpdateCropFieldCommand command)
     {
-        if (id != command.CropFieldId)
-            return BadRequest(new { message = "ID mismatch" });
-
-
-        var cropField = await _commandService.Handle(command);
+        var cropField = await _commandService.Handle(id, command);
         if (cropField == null) return NotFound();
-        return Ok(cropField);
+        var resource = CropFieldResourceFromEntityAssembler.ToResource(cropField);
+        return Ok(resource);
+    }
+
+    /// <summary>
+    /// Soft-delete a CropField by ID (marks it as deleted). This endpoint is exposed as HTTP DELETE and will appear in Swagger.
+    /// </summary>
+    /// <param name="id">CropField ID</param>
+    /// <response code="204">CropField deleted successfully (soft-delete)</response>
+    /// <response code="404">CropField not found</response>
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> DeleteCropField(int id)
+    {
+        var cropField = await _commandService.HandleDelete(id);
+        if (cropField == null) return NotFound();
+        return NoContent();
     }
 }
-

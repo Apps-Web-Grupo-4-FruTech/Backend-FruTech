@@ -10,9 +10,11 @@ using CommunityRecommendationAggregate = FruTech.Backend.API.CommunityRecommenda
 
 namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration
 {
+    /// <summary>
+    ///  Application database context
+    /// </summary>
     public class AppDbContext : DbContext
     {
-        // DbSets
         public DbSet<UserAggregate> Users { get; set; }
         public DbSet<CommunityRecommendationAggregate> CommunityRecommendations { get; set; }
         public DbSet<CropField> CropFields { get; set; }
@@ -29,8 +31,7 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             builder.AddCreatedUpdatedInterceptor();
             base.OnConfiguring(builder);
         }
-
-        // Ensure CreatedDate and UpdatedDate are populated automatically
+        
         public override int SaveChanges()
         {
             UpdateTimestamps();
@@ -45,7 +46,7 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
 
         private void UpdateTimestamps()
         {
-            var now = DateTimeOffset.Now; // use device local time per user request
+            var now = DateTimeOffset.Now; 
 
             foreach (var entry in ChangeTracker.Entries())
             {
@@ -63,12 +64,15 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
                 }
             }
         }
-
+        /// <summary>
+        ///  Configures the entity mappings and relationships
+        /// </summary>
+        /// <param name="builder"></param>
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            // ========== USER ==========
+            builder.UseSnakeCaseNamingConvention();
+            
             builder.Entity<UserAggregate>().ToTable("users");
             builder.Entity<UserAggregate>().HasKey(u => u.Id);
             builder.Entity<UserAggregate>().Property(u => u.Id).ValueGeneratedOnAdd();
@@ -79,25 +83,25 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             builder.Entity<UserAggregate>().Property(u => u.PasswordHash).IsRequired();
             builder.Entity<UserAggregate>().HasIndex(u => u.Email).IsUnique();
             builder.Entity<UserAggregate>().HasIndex(u => u.Identificator).IsUnique();
-
-            // ========== FIELD (con UserId FK) ==========
+            
             builder.Entity<Field>().ToTable("fields");
             builder.Entity<Field>().HasKey(f => f.Id);
             builder.Entity<Field>().Property(f => f.Id).ValueGeneratedOnAdd();
             builder.Entity<Field>().Property(f => f.UserId).IsRequired();
             builder.Entity<Field>().Property(f => f.Name).IsRequired().HasMaxLength(200);
             builder.Entity<Field>().Property(f => f.Location).HasMaxLength(300);
-            builder.Entity<Field>().Property(f => f.ImageUrl).HasMaxLength(500);
             builder.Entity<Field>().Property(f => f.FieldSize).HasMaxLength(50);
+            builder.Entity<Field>().Property(f => f.ImageContent).HasColumnType("longblob");
+            builder.Entity<Field>().Property(f => f.ImageContentType).HasMaxLength(100);
 
-            // Relación User 1:N Fields
+
             builder.Entity<Field>()
                 .HasOne<UserAggregate>()
                 .WithMany()
                 .HasForeignKey(f => f.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ========== CROPFIELD (1:1 con Field) ==========
+
             builder.Entity<CropField>().ToTable("crop_fields");
             builder.Entity<CropField>().HasKey(c => c.Id);
             builder.Entity<CropField>().Property(c => c.Id).ValueGeneratedOnAdd();
@@ -107,23 +111,23 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             builder.Entity<CropField>().Property(c => c.Watering).HasMaxLength(200);
             builder.Entity<CropField>().Property(c => c.Sunlight).HasMaxLength(100);
 
-            // Mapear enum Status como string
+
             builder.Entity<CropField>()
                 .Property(c => c.Status)
                 .HasConversion<string>()
                 .IsRequired()
                 .HasMaxLength(50);
 
-            // Relación Field 1:1 CropField usando navegación Field.CropField
+
             builder.Entity<Field>()
                 .HasOne(f => f.CropField)
-                .WithOne()
+                .WithOne(cf => cf.Field)
                 .HasForeignKey<CropField>(c => c.FieldId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             builder.Entity<CropField>().HasIndex(c => c.FieldId).IsUnique();
 
-            // ========== PROGRESSHISTORY (1:1 con Field) ==========
+
             builder.Entity<ProgressHistory>().ToTable("progress_histories");
             builder.Entity<ProgressHistory>().HasKey(p => p.Id);
             builder.Entity<ProgressHistory>().Property(p => p.Id).ValueGeneratedOnAdd();
@@ -140,7 +144,7 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             
             builder.Entity<ProgressHistory>().HasIndex(p => p.FieldId).IsUnique();
 
-            // ========== TASK (N:1 con Field) ==========
+
             builder.Entity<Tasks.Domain.Model.Aggregate.Task>().ToTable("tasks");
             builder.Entity<Tasks.Domain.Model.Aggregate.Task>().HasKey(t => t.Id);
             builder.Entity<Tasks.Domain.Model.Aggregate.Task>().Property(t => t.Id).ValueGeneratedOnAdd();
@@ -150,11 +154,11 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             
             builder.Entity<Field>()
                 .HasMany(f => f.Tasks!)
-                .WithOne()
+                .WithOne(t => t.Field)
                 .HasForeignKey(t => t.FieldId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // ========== COMMUNITYRECOMMENDATION ==========
+   
             builder.Entity<CommunityRecommendationAggregate>().ToTable("community_recommendations");
             builder.Entity<CommunityRecommendationAggregate>().HasKey(c => c.Id);
             builder.Entity<CommunityRecommendationAggregate>().Property(c => c.Id).ValueGeneratedOnAdd();

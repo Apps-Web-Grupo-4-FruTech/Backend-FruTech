@@ -3,11 +3,12 @@ using FruTech.Backend.API.Fields.Domain.Model.Entities;
 using FruTech.Backend.API.Fields.Domain.Model.Repositories;
 using FruTech.Backend.API.Shared.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using FruTech.Backend.API.Fields.Interfaces.REST.Resources;
 
 namespace FruTech.Backend.API.Fields.Interfaces.REST
 {
     /// <summary>
-    /// Controlador para la gestión del historial de progreso de los cultivos.
+    /// Controller for managing progress history records.
     /// </summary>
     [ApiController]
     [Route("api/v1/progress")]
@@ -23,9 +24,9 @@ namespace FruTech.Backend.API.Fields.Interfaces.REST
         }
 
         /// <summary>
-        /// Obtiene todos los registros de historial de progreso.
+        /// Gets all progress history records.
         /// </summary>
-        /// <response code="200">Lista de historiales recuperada correctamente.</response>
+        /// <response code="200">List of histories retrieved successfully.</response>
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -34,11 +35,11 @@ namespace FruTech.Backend.API.Fields.Interfaces.REST
         }
 
         /// <summary>
-        /// Obtiene un historial de progreso por su identificador.
+        /// Gets a progress history by its identifier.
         /// </summary>
-        /// <param name="id">Identificador del historial.</param>
-        /// <response code="200">Historial encontrado.</response>
-        /// <response code="404">No existe un historial con el identificador proporcionado.</response>
+        /// <param name="id">History identifier.</param>
+        /// <response code="200">History found.</response>
+        /// <response code="404">No history found with the provided identifier.</response>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -48,53 +49,47 @@ namespace FruTech.Backend.API.Fields.Interfaces.REST
         }
 
         /// <summary>
-        /// Crea un nuevo registro de historial de progreso.
+        /// Creates a new progress history record.
         /// </summary>
-        /// <param name="progressHistory">Datos del historial de progreso a crear.</param>
-        /// <response code="201">Historial creado correctamente.</response>
+        /// <param name="progressHistory">Progress history data to create.</param>
+        /// <response code="201">History created successfully.</response>
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ProgressHistory progressHistory)
         {
             var scope = HttpContext.RequestServices.CreateScope();
             var db = scope.ServiceProvider.GetService<FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration.AppDbContext>();
-
-            // Si FieldId es 0 o no se especificó, buscar el último Field creado
+            
             if (progressHistory.FieldId <= 0 && db != null)
             {
                 var lastField = await db.Fields.OrderByDescending(f => f.Id).FirstOrDefaultAsync();
                 if (lastField != null)
                 {
-                    progressHistory.FieldId = lastField.Id; // Asignar automáticamente el último Field
+                    progressHistory.FieldId = lastField.Id; 
                 }
             }
 
             await _progressRepo.AddAsync(progressHistory);
             await _unitOfWork.CompleteAsync();
-
-            // Eliminado: asignación de ProgressHistoryId inexistente. La relación se resuelve por FieldId en ProgressHistory.
-
+            
             return CreatedAtAction(nameof(GetById), new { id = progressHistory.Id }, progressHistory);
         }
 
         /// <summary>
-        /// Actualiza un registro de historial de progreso.
+        /// Updates a progress history record.
         /// </summary>
-        /// <param name="id">Identificador del historial a actualizar.</param>
-        /// <param name="progressHistory">Datos actualizados del historial.</param>
-        /// <response code="204">Historial actualizado correctamente.</response>
-        /// <response code="404">No existe un historial con el identificador proporcionado.</response>
+        /// <param name="id">Identifier of the history to update.</param>
+        /// <param name="resource">Updated history data (only Watered, Fertilized, Pests).</param>
+        /// <response code="204">History updated successfully.</response>
+        /// <response code="404">No history found with the provided identifier.</response>
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] ProgressHistory progressHistory)
+        public async Task<IActionResult> Update(int id, [FromBody] UpdateProgressHistoryResource resource)
         {
-
             var existing = await _progressRepo.GetByIdAsync(id);
             if (existing == null) return NotFound();
-
-            // Actualizar propiedades
-            existing.FieldId = progressHistory.FieldId;
-            existing.Watered = progressHistory.Watered;
-            existing.Fertilized = progressHistory.Fertilized;
-            existing.Pests = progressHistory.Pests;
+            
+            existing.Watered = resource.Watered;
+            existing.Fertilized = resource.Fertilized;
+            existing.Pests = resource.Pests;
 
             _progressRepo.Update(existing);
             await _unitOfWork.CompleteAsync();

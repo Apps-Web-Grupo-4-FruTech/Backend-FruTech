@@ -1,7 +1,10 @@
 using Cortex.Mediator.Commands;
 
 namespace FruTech.Backend.API.Shared.Infrastructure.Mediator.Cortex.Configuration;
-
+/// <summary>
+///  Logs command execution details
+/// </summary>
+/// <typeparam name="TCommand"></typeparam>
 public class LoggingCommandBehavior<TCommand>
 : ICommandPipelineBehavior<TCommand> where TCommand : ICommand
 {
@@ -10,7 +13,6 @@ public class LoggingCommandBehavior<TCommand>
         CommandHandlerDelegate next,
         CancellationToken ct)
     {
-        //Log before/after command execution
         await next();
     }
     

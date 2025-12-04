@@ -3,7 +3,7 @@
 namespace FruTech.Backend.API.CropFields.Domain.Model.Commands;
 
 /// <summary>
-/// Comando para crear un CropField asociado a un Field existente
+/// Command to create a CropField associated with an existing Field
 /// </summary>
 public record CreateCropFieldCommand(
     int FieldId,
@@ -15,4 +15,3 @@ public record CreateCropFieldCommand(
     DateTime? HarvestDate,
     CropFieldStatus Status
 );
-

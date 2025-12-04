@@ -3,6 +3,9 @@ using FruTech.Backend.API.Shared.Domain.Repositories;
 
 namespace FruTech.Backend.API.Fields.Domain.Model.Repositories
 {
+    /// <summary>
+    ///  Repository interface for managing Field entities.
+    /// </summary>
     public interface IFieldRepository : IBaseRepository<Field>
     {
         Task<IEnumerable<Field>> GetAllAsync();

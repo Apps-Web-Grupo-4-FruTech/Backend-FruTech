@@ -13,8 +13,16 @@ namespace FruTech.Backend.API.Fields.Domain.Model.Entities
         /// </summary>
         public int UserId { get; set; }
 
-        [JsonPropertyName("image_url")] 
-        public string ImageUrl { get; set; } = string.Empty;
+
+        /// <summary>
+        /// Raw image bytes (BLOB) stored in database. Nullable.
+        /// </summary>
+        public byte[]? ImageContent { get; set; }
+
+        /// <summary>
+        /// MIME content type for the image (e.g. "image/png"). Nullable.
+        /// </summary>
+        public string? ImageContentType { get; set; }
 
         [JsonPropertyName("name")]
         public string Name { get; set; } = string.Empty;

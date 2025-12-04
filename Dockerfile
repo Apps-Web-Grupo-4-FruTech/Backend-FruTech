@@ -1,26 +1,27 @@
-# Etapa de compilación
+# Etapa de construcción (Build)
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copiar el archivo de proyecto y restaurar dependencias
+# Copiar el csproj y restaurar dependencias
+# Ajustamos la ruta basándonos en tu estructura de carpetas
 COPY ["FruTech.Backend.API/FruTech.Backend.API.csproj", "FruTech.Backend.API/"]
 RUN dotnet restore "FruTech.Backend.API/FruTech.Backend.API.csproj"
 
 # Copiar el resto del código
 COPY . .
 WORKDIR "/src/FruTech.Backend.API"
+
+# Construir y publicar la aplicación
 RUN dotnet build "FruTech.Backend.API.csproj" -c Release -o /app/build
+RUN dotnet publish "FruTech.Backend.API.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
-# Publicar la aplicación
-FROM build AS publish
-RUN dotnet publish "FruTech.Backend.API.csproj" -c Release -o /app/publish
-
-# Etapa final / Imagen de ejecución
+# Etapa final (Runtime)
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 
-# Puerto que Railway espera (puedes usar la variable PORT)
+# Render asigna el puerto mediante la variable de entorno PORT (por defecto 10000 o 8080)
+# Configuramos ASP.NET para escuchar en el puerto correcto
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 

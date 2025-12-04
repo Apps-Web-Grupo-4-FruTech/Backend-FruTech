@@ -28,11 +28,13 @@ using FruTech.Backend.API.Fields.Application.Internal.QueryServices;
 using FruTech.Backend.API.CropFields.Domain.Services;
 using FruTech.Backend.API.CropFields.Application.Internal.CommandServices;
 using FruTech.Backend.API.CropFields.Application.Internal.QueryServices;
+using FruTech.Backend.API.Shared.Domain.Services;
+using FruTech.Backend.API.Shared.Infrastructure.Services;
 using Cortex.Mediator;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// CORS Configuration
+
 const string FrontendCorsPolicy = "FrontendCorsPolicy";
 builder.Services.AddCors(options =>
 {
@@ -44,7 +46,7 @@ builder.Services.AddCors(options =>
     });
 });
 
-// DbContext MySQL
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(
         builder.Configuration.GetConnectionString("DefaultConnection") 
@@ -56,10 +58,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     )
 );
 
-// Unit of Work
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-// Repositories
+
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IFieldRepository, FieldRepository>();
 builder.Services.AddScoped<IProgressHistoryRepository, ProgressHistoryRepository>();
@@ -67,7 +69,7 @@ builder.Services.AddScoped<ICropFieldRepository, CropFieldRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ICommunityRecommendationRepository, CommunityRecommendationRepository>();
 
-// Services (Command & Query)
+
 builder.Services.AddScoped<IUserCommandService, UserCommandService>();
 builder.Services.AddScoped<IUserQueryService, UserQueryService>();
 builder.Services.AddScoped<IFieldCommandService, FieldCommandService>();
@@ -79,13 +81,18 @@ builder.Services.AddScoped<ITaskQueryService, TaskQueryService>();
 builder.Services.AddScoped<ICommunityRecommendationCommandService, CommunityRecommendationCommandService>();
 builder.Services.AddScoped<ICommunityRecommendationQueryService, CommunityRecommendationQueryService>();
 
-// Mediator
+
+builder.Services.AddHttpClient<IGeoLocationService, GeoLocationService>();
+
+
 builder.Services.AddScoped<IMediator, Mediator>();
 
-// Controllers / OpenAPI
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
         options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
     });
@@ -105,20 +112,10 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Cleanup migration and UpcomingTasks tables if they exist (once at startup)
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    try
-    {
-        dbContext.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS `__EFMigrationsHistory`;");
-        dbContext.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS `UpcomingTasks`;");
-        dbContext.Database.ExecuteSqlRaw("DROP TABLE IF EXISTS `upcoming_tasks`;");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine($"Error cleaning up tables: {ex.Message}");
-    }
+    dbContext.Database.EnsureCreated();
 }
 
 app.UseSwagger();

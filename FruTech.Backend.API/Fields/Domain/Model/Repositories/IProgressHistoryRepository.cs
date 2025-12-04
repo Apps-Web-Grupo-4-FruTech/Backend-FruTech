@@ -3,6 +3,9 @@ using FruTech.Backend.API.Shared.Domain.Repositories;
 
 namespace FruTech.Backend.API.Fields.Domain.Model.Repositories
 {
+    /// <summary>
+    ///  Repository interface for managing ProgressHistory entities.
+    /// </summary>
     public interface IProgressHistoryRepository : IBaseRepository<ProgressHistory>
     {
         Task<IEnumerable<ProgressHistory>> GetAllAsync();

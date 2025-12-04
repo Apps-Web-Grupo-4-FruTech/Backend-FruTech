@@ -2,6 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace FruTech.Backend.API.Fields.Domain.Model.Entities
 {
+    /// <summary>
+    ///  Progress history for a field
+    /// </summary>
     public partial class ProgressHistory
     {
         public int Id { get; set; }
