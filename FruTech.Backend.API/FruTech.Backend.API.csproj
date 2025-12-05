@@ -35,4 +35,20 @@
       <Folder Include="User\" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Remove="RESUMEN_INSERTAR_ROLES.md" />
+      <None Remove="INSERTAR_ROLES_DOCKER.md" />
+      <None Remove="crear-base-de-datos.ps1" />
+      <None Remove="COMO_INSERTAR_ROLES.md" />
+      <None Remove="RESUMEN_SOLUCION.md" />
+      <None Remove="EJEMPLOS_PRUEBA.md" />
+      <None Remove="SOLUCION_ROLES.md" />
+      <None Remove="LEEME_PRIMERO.md" />
+      <None Remove="insert_roles.sql" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="User\Interfaces\REST\Controllers\RolesController.cs" />
+    </ItemGroup>
+
 </Project>

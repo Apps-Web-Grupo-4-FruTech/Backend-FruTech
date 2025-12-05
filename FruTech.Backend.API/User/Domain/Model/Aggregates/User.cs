@@ -1,4 +1,6 @@
 
+using FruTech.Backend.API.User.Domain.Model.Entities;
+
 namespace FruTech.Backend.API.User.Domain.Model.Aggregates
 {  
     /// <summary>
@@ -12,6 +14,11 @@ namespace FruTech.Backend.API.User.Domain.Model.Aggregates
         public string PhoneNumber { get; private set; } = string.Empty;
         public string Identificator { get; private set; } = string.Empty;
         public string PasswordHash { get; private set; } = string.Empty;
+        
+        /// <summary>
+        /// Rol asignado al usuario (relación uno-a-uno).
+        /// </summary>
+        public UserRole? UserRole { get; set; }
 
         private User() { }
         /// <summary>

@@ -3,6 +3,7 @@ using FruTech.Backend.API.User.Domain.Model.Queries;
 using FruTech.Backend.API.User.Domain.Services;
 using FruTech.Backend.API.User.Interfaces.REST.Resources;
 using FruTech.Backend.API.User.Interfaces.REST.Transform;
+using FruTech.Backend.API.Shared.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FruTech.Backend.API.User.Interfaces.REST.Controllers;
@@ -16,11 +17,13 @@ public class UsersController : ControllerBase
 {
     private readonly IUserCommandService _userCommandService;
     private readonly IUserQueryService _userQueryService;
+    private readonly ITokenService _tokenService;
 
-    public UsersController(IUserCommandService userCommandService, IUserQueryService userQueryService)
+    public UsersController(IUserCommandService userCommandService, IUserQueryService userQueryService, ITokenService tokenService)
     {
         _userCommandService = userCommandService;
         _userQueryService = userQueryService;
+        _tokenService = tokenService;
     }
 
     /// <summary>
@@ -53,7 +56,8 @@ public class UsersController : ControllerBase
         var command = new SignInUserCommand(resource.Email, resource.Password);
         var user = await _userCommandService.Handle(command);
         if (user == null) return Unauthorized();
-        var response = new SignInResponseResource(user.Id, user.UserName, user.Email, string.Empty); // Token placeholder
+        var token = _tokenService.GenerateToken(user);
+        var response = new SignInResponseResource(user.Id, user.UserName, user.Email, token, user.UserRole?.RoleId ?? 0);
         return Ok(response);
     }
 

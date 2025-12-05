@@ -27,7 +27,9 @@ public class UserRepository : BaseRepository<UserAggregate>, IUserRepository
     /// <returns></returns>
     public async Task<UserAggregate?> FindByEmailAsync(string email)
     {
-        return await _context.Set<UserAggregate>().FirstOrDefaultAsync(u => u.Email == email);
+        return await _context.Set<UserAggregate>()
+            .Include(u => u.UserRole)
+            .FirstOrDefaultAsync(u => u.Email == email);
     }
     /// <summary>
     ///  Finds a UserAggregate by identificator.
@@ -37,5 +39,17 @@ public class UserRepository : BaseRepository<UserAggregate>, IUserRepository
     public async Task<UserAggregate?> FindByIdentificatorAsync(string identificator)
     {
         return await _context.Set<UserAggregate>().FirstOrDefaultAsync(u => u.Identificator == identificator);
+    }
+    
+    /// <summary>
+    ///  Finds a UserAggregate by ID including UserRole relationship.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    public new async Task<UserAggregate?> FindByIdAsync(int id)
+    {
+        return await _context.Set<UserAggregate>()
+            .Include(u => u.UserRole)
+            .FirstOrDefaultAsync(u => u.Id == id);
     }
 }

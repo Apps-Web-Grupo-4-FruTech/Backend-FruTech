@@ -8,9 +8,11 @@ namespace FruTech.Backend.API.User.Interfaces.REST.Resources;
 /// <param name="PhoneNumber"></param>
 /// <param name="Identificator"></param>
 /// <param name="Password"></param>
+/// <param name="RoleId"></param>
 public record SignUpUserResource(
     [Required][MinLength(3)] string UserName,
     [Required][EmailAddress] string Email,
     [Required][Phone] string PhoneNumber,
     [Required] string Identificator,
-    [Required][MinLength(6)] string Password);
+    [Required][MinLength(6)] string Password,
+    [Required][Range(1, 2)] int RoleId);

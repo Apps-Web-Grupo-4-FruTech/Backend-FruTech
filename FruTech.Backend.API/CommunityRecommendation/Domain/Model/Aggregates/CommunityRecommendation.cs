@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FruTech.Backend.API.CommunityRecommendation.Domain.Model.Aggregates;
 
@@ -17,6 +18,12 @@ public partial class CommunityRecommendation
     
     [JsonPropertyName("comment")]
     public string Comment { get; set; } = string.Empty;
+    
+    /// <summary>
+    /// Nombre del rol del usuario que hizo la recomendación (no se persiste en la BD).
+    /// </summary>
+    [NotMapped]
+    public string Role { get; set; } = "Sin Asignar";
     
     public CommunityRecommendation() { }
     /// <summary>

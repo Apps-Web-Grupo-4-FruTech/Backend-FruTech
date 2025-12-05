@@ -3,7 +3,9 @@ using FruTech.Backend.API.User.Domain.Model.Commands;
 using FruTech.Backend.API.User.Domain.Repositories;
 using FruTech.Backend.API.User.Domain.Services;
 using UserAggregate = FruTech.Backend.API.User.Domain.Model.Aggregates.User;
-using FruTech.Backend.API.CommunityRecommendation.Domain.Repositories; 
+using FruTech.Backend.API.CommunityRecommendation.Domain.Repositories;
+using FruTech.Backend.API.User.Domain.Model.Entities;
+using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration; 
 
 namespace FruTech.Backend.API.User.Application.Internal.CommandServices;
 /// <summary>
@@ -13,18 +15,21 @@ public class UserCommandService : IUserCommandService
 {
     private readonly IUserRepository _userRepository;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly ICommunityRecommendationRepository _communityRecommendationRepository; // new field
+    private readonly ICommunityRecommendationRepository _communityRecommendationRepository;
+    private readonly AppDbContext _dbContext;
     /// <summary>
     ///  Constructor del servicio de comandos de usuario.
     /// </summary>
     /// <param name="userRepository"></param>
     /// <param name="unitOfWork"></param>
     /// <param name="communityRecommendationRepository"></param>
-    public UserCommandService(IUserRepository userRepository, IUnitOfWork unitOfWork, ICommunityRecommendationRepository communityRecommendationRepository)
+    /// <param name="dbContext"></param>
+    public UserCommandService(IUserRepository userRepository, IUnitOfWork unitOfWork, ICommunityRecommendationRepository communityRecommendationRepository, AppDbContext dbContext)
     {
         _userRepository = userRepository;
         _unitOfWork = unitOfWork;
-        _communityRecommendationRepository = communityRecommendationRepository; // assign
+        _communityRecommendationRepository = communityRecommendationRepository;
+        _dbContext = dbContext;
     }
     /// <summary>
     ///  Maneja el comando de registro de usuario.
@@ -43,6 +48,16 @@ public class UserCommandService : IUserCommandService
         user.HashPassword(command.Password);
 
         await _userRepository.AddAsync(user);
+        await _unitOfWork.CompleteAsync();
+
+        // Crear y guardar la relación UserRole
+        var userRole = new UserRole
+        {
+            UserId = user.Id,
+            RoleId = command.RoleId
+        };
+        
+        await _dbContext.UserRoles.AddAsync(userRole);
         await _unitOfWork.CompleteAsync();
 
         return user;

@@ -1,6 +1,11 @@
 using System.Reflection;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration;
+using FruTech.Backend.API.Shared.Domain.Settings;
+using FruTech.Backend.API.Shared.Domain.Services;
 using FruTech.Backend.API.Shared.Domain.Repositories;
 using FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Repositories;
 using FruTech.Backend.API.User.Domain.Repositories;
@@ -28,7 +33,6 @@ using FruTech.Backend.API.Fields.Application.Internal.QueryServices;
 using FruTech.Backend.API.CropFields.Domain.Services;
 using FruTech.Backend.API.CropFields.Application.Internal.CommandServices;
 using FruTech.Backend.API.CropFields.Application.Internal.QueryServices;
-using FruTech.Backend.API.Shared.Domain.Services;
 using FruTech.Backend.API.Shared.Infrastructure.Services;
 using Cortex.Mediator;
 
@@ -57,6 +61,38 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         )
     )
 );
+
+// Configure TokenSettings
+var tokenSettings = new TokenSettings();
+builder.Configuration.GetSection("TokenSettings").Bind(tokenSettings);
+builder.Services.AddSingleton(tokenSettings);
+
+// Add JWT Authentication
+var key = Encoding.ASCII.GetBytes(tokenSettings.Secret);
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = true,
+        ValidIssuer = tokenSettings.Issuer,
+        ValidateAudience = true,
+        ValidAudience = tokenSettings.Audience,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.Zero
+    };
+});
+
+// Register TokenService
+builder.Services.AddScoped<ITokenService, FruTech.Backend.API.Shared.Infrastructure.Services.TokenService>();
 
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -108,6 +144,31 @@ builder.Services.AddSwaggerGen(options =>
     {
         options.IncludeXmlComments(xmlPath);
     }
+
+    // Agregar definición de seguridad JWT
+    options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Description = "Ingresa tu token JWT en el formato: Bearer {token}"
+    });
+
+    // Aplicar el esquema de seguridad globalmente
+    options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
 });
 
 var app = builder.Build();
@@ -127,6 +188,7 @@ app.UseSwaggerUI(c =>
 
 app.UseHttpsRedirection();
 app.UseCors(FrontendCorsPolicy);
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

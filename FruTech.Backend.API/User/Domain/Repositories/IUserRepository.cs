@@ -9,4 +9,12 @@ public interface IUserRepository : IBaseRepository<UserAggregate>
 {
     Task<UserAggregate?> FindByEmailAsync(string email);
     Task<UserAggregate?> FindByIdentificatorAsync(string identificator);
+    
+    /// <summary>
+    ///  Finds a UserAggregate by ID including related UserRole.
+    ///  This overrides the generic implementation to include role information.
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
+    new Task<UserAggregate?> FindByIdAsync(int id);
 }

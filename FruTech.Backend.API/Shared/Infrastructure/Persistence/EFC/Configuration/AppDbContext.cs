@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using EntityFrameworkCore.CreatedUpdatedDate.Extensions;
 using UserAggregate = FruTech.Backend.API.User.Domain.Model.Aggregates.User;
 using CommunityRecommendationAggregate = FruTech.Backend.API.CommunityRecommendation.Domain.Model.Aggregates.CommunityRecommendation;
+using FruTech.Backend.API.User.Domain.Model.Entities;
 
 namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuration
 {
@@ -16,6 +17,8 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
     public class AppDbContext : DbContext
     {
         public DbSet<UserAggregate> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+        public DbSet<UserRole> UserRoles { get; set; }
         public DbSet<CommunityRecommendationAggregate> CommunityRecommendations { get; set; }
         public DbSet<CropField> CropFields { get; set; }
         public DbSet<Field> Fields { get; set; }
@@ -165,6 +168,43 @@ namespace FruTech.Backend.API.Shared.Infrastructure.Persistence.EFC.Configuratio
             builder.Entity<CommunityRecommendationAggregate>().Property(c => c.UserName).IsRequired().HasMaxLength(100);
             builder.Entity<CommunityRecommendationAggregate>().Property(c => c.Comment).IsRequired().HasMaxLength(2000);
             builder.Entity<CommunityRecommendationAggregate>().Property(c => c.CommentDate).IsRequired();
+
+
+            builder.Entity<Role>().ToTable("roles");
+            builder.Entity<Role>().HasKey(r => r.Id);
+            builder.Entity<Role>().Property(r => r.Id).ValueGeneratedOnAdd();
+            builder.Entity<Role>().Property(r => r.Name).IsRequired().HasMaxLength(100);
+            
+            // Seed data para roles
+            builder.Entity<Role>().HasData(
+                new Role { Id = 1, Name = "Agricultor experto" },
+                new Role { Id = 2, Name = "Agricultor novato" }
+            );
+
+
+            builder.Entity<UserRole>().ToTable("user_roles");
+            builder.Entity<UserRole>().HasKey(ur => ur.Id);
+            builder.Entity<UserRole>().Property(ur => ur.Id).ValueGeneratedOnAdd();
+            builder.Entity<UserRole>().Property(ur => ur.UserId).IsRequired();
+            builder.Entity<UserRole>().Property(ur => ur.RoleId).IsRequired();
+            
+            // Configurar relación uno-a-uno con User (EVITA UserId1)
+            // UserRole es el lado dependiente (tiene la FK)
+            builder.Entity<UserRole>()
+                .HasOne(ur => ur.User)
+                .WithOne(u => u.UserRole)
+                .HasForeignKey<UserRole>(ur => ur.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            // Configurar relación muchos-a-uno con Role
+            builder.Entity<UserRole>()
+                .HasOne(ur => ur.Role)
+                .WithMany(r => r.UserRoles)
+                .HasForeignKey(ur => ur.RoleId)
+                .OnDelete(DeleteBehavior.Cascade);
+            
+            // Crear índice único en UserId (un usuario solo puede tener un rol)
+            builder.Entity<UserRole>().HasIndex(ur => ur.UserId).IsUnique();
         }
     }
 }

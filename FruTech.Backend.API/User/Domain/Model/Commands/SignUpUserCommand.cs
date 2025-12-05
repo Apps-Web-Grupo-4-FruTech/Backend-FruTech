@@ -7,5 +7,6 @@ namespace FruTech.Backend.API.User.Domain.Model.Commands;
 /// <param name="PhoneNumber"></param>
 /// <param name="Identificator"></param>
 /// <param name="Password"></param>
-public record SignUpUserCommand(string UserName, string Email, string PhoneNumber, string Identificator, string Password);
+/// <param name="RoleId"></param>
+public record SignUpUserCommand(string UserName, string Email, string PhoneNumber, string Identificator, string Password, int RoleId);
 

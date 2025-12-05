@@ -21,6 +21,7 @@ public static class CommunityRecommendationResourceFromEntityAssembler
         return new CommunityRecommendationResource(
             entity.Id,
             entity.UserName,
+            entity.Role,
             entity.CommentDate,
             entity.Comment);
     }

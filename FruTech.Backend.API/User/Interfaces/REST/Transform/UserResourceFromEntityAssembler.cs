@@ -8,5 +8,19 @@ namespace FruTech.Backend.API.User.Interfaces.REST.Transform;
 public static class UserResourceFromEntityAssembler
 {
     public static UserResource ToResourceFromEntity(UserAggregate entity)
-        => new(entity.Id, entity.UserName, entity.Email, entity.PhoneNumber, entity.Identificator, entity.CreatedDate, entity.UpdatedDate);
+    {
+        // Obtener el RoleId del UserRole (relación uno-a-uno)
+        var roleId = entity.UserRole?.RoleId ?? 0;
+        
+        return new UserResource(
+            entity.Id, 
+            entity.UserName, 
+            entity.Email, 
+            entity.PhoneNumber, 
+            entity.Identificator, 
+            roleId,
+            entity.CreatedDate, 
+            entity.UpdatedDate
+        );
+    }
 }

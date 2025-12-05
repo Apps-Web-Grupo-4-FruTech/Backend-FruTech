@@ -7,6 +7,7 @@ namespace FruTech.Backend.API.User.Interfaces.REST.Resources;
 /// <param name="Email"></param>
 /// <param name="PhoneNumber"></param>
 /// <param name="Identificator"></param>
+/// <param name="RoleId"></param>
 /// <param name="CreatedDate"></param>
 /// <param name="UpdatedDate"></param>
-public record UserResource(int Id, string UserName, string Email, string PhoneNumber, string Identificator, DateTimeOffset? CreatedDate, DateTimeOffset? UpdatedDate);
+public record UserResource(int Id, string UserName, string Email, string PhoneNumber, string Identificator, int RoleId, DateTimeOffset? CreatedDate, DateTimeOffset? UpdatedDate);
